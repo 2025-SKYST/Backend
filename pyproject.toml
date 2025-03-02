@@ -27,7 +27,8 @@ dependencies = [
     "boto3 (==1.36.23)",
     "aioboto3 (>=14.0.0,<15.0.0)",
     "botocore (==1.36.23)",
-    "python-multipart (>=0.0.20,<0.0.21)"
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "typing-extensions (>=4.12.2,<5.0.0)"
 ]
 
 

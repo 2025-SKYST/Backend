@@ -9,8 +9,17 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from mysol.database.common import Base
 from mysol.database.settings import DB_SETTINGS
 
-from mysol.app.User.models import User
-from mysol.app.Blog.models import Blog
+from mysol.app.article.models import Article
+from mysol.app.blog.models import Blog
+from mysol.app.category.models import Category
+from mysol.app.comment.models import Comment
+from mysol.app.draft.models import Draft
+from mysol.app.image.models import Image
+from mysol.app.like.models import Like
+from mysol.app.message.models import Message
+from mysol.app.notification.models import Notification
+from mysol.app.subscription.models import Subscription
+from mysol.app.user.models import User
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
