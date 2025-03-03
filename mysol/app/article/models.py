@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Optional
-from sqlalchemy import String, Text, DateTime, func, ForeignKey, Integer
+from sqlalchemy import String, Text, DateTime, func, ForeignKey, Integer, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from mysol.database.common import Base, intpk
@@ -31,6 +31,8 @@ class Article(Base):
 
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now(), onupdate=func.now())    
+
+    problem_numbers: Mapped[list[int] | None] = mapped_column(JSON, nullable=True, default=[])
     # ondelete = "CASCADE" 를 통해 Article 삭제 시, Article 과 연결된 레코드에서 자동으로 참조가 제거.
     # blog 와 category 의 models 에서
     ## posts: Mapped[list["Article"]] = relationship("Article", back_populates="blog", cascade="all, delete-orphan")

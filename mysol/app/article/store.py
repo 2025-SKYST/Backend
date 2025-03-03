@@ -2,9 +2,11 @@ from functools import cache
 from fastapi import Depends
 from typing import Annotated, Sequence, List, Optional
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import Select, select, or_, and_, func, update
-from sqlalchemy.orm import joinedload, aliased
+from sqlalchemy import Select, select, or_, and_, func, update, cast, String
+from sqlalchemy.orm import joinedload, aliased, Mapped
 from sqlalchemy.sql.elements import ClauseElement
+from sqlalchemy.sql.expression import func
+from sqlalchemy.dialects.mysql import JSON
 
 from mysol.app.article.models import Article
 from mysol.app.blog.models import Blog
@@ -77,11 +79,14 @@ class ArticleStore :
         blog_id : int, 
         category_id : int, 
         images : List[ImageCreateRequest],
+        problem_numbers : Optional[list[int]] = None,
         secret : int = 0,
         protected: int = 0,
         comments_enabled : int = 1,
         password: Optional[str] = None
     ) -> Article :
+        
+        problem_numbers = problem_numbers or []
         
         article = Article(
             title=article_title, 
@@ -93,7 +98,8 @@ class ArticleStore :
             secret=secret,
             protected=protected,
             password=password,
-            comments_enabled=comments_enabled
+            comments_enabled=comments_enabled,
+            problem_numbers=problem_numbers
         )
         
         SESSION.add(article)
@@ -123,6 +129,7 @@ class ArticleStore :
         article: Article,
         category_id: int,
         images: List[ImageCreateRequest],
+        problem_numbers : Optional[list[int]] = None,
         article_title: Optional[str] = None,
         article_content: Optional[str] = None,
         article_description: Optional[str] = None,
@@ -150,6 +157,8 @@ class ArticleStore :
             article.comments_enabled = comments_enabled
         if category_id is not None:
             article.category_id = category_id
+        if problem_numbers is not None:
+            article.problem_numbers = problem_numbers
 
 
         if main_image_url != article.main_image_url :
@@ -698,3 +707,67 @@ class ArticleStore :
             total_count=total_count or 0,
             articles=articles,
         )
+
+    @transactional
+    async def get_articles_by_problem_number(
+        self,
+        problem_number: int,
+        user: User,
+        page: int = 1,
+        per_page: int = 10
+    ) -> PaginatedArticleListResponse:
+        """
+        특정 문제 번호를 포함하는 Article 목록을 가져오는 함수 (MySQL 대응)
+        """
+        offset_val = (page - 1) * per_page
+
+        # 접근 조건 생성
+        access_condition = self.get_access_condition(user, 0)
+        base_query = self.build_base_query(access_condition)
+
+        # ✅ JSON_CONTAINS 사용 시, NULL 방지를 위해 ifnull 적용
+        stmt = (
+            base_query
+            .filter(
+                func.json_contains(func.ifnull(Article.problem_numbers, '[]'), str(problem_number))
+            )
+            .order_by(Article.created_at.desc())
+            .offset(offset_val)
+            .limit(per_page)
+        )
+
+        # 쿼리 실행
+        result = await SESSION.execute(stmt)
+        rows = result.all()
+
+        # Pydantic 모델로 변환
+        articles = [
+            ArticleSearchInListResponse.from_article(
+                article=row.Article,
+                blog_name=row.blog_name,
+                blog_main_image_url=row.blog_main_image_url,
+                article_likes=row.likes,
+                article_comments=row.comments,
+                user=user
+            )
+            for row in rows
+        ]
+
+        # 전체 개수 계산
+        total_count_stmt = (
+            select(func.count(func.distinct(Article.id)))
+            .join(Blog, Blog.id == Article.blog_id)
+            .filter(
+                func.json_contains(func.ifnull(Article.problem_numbers, '[]'), str(problem_number)),
+                access_condition  # 접근 조건 필터링 추가
+            )
+        )
+        total_count = await SESSION.scalar(total_count_stmt)
+
+        return PaginatedArticleListResponse(
+            page=page,
+            per_page=per_page,
+            total_count=total_count or 0,
+            articles=articles,
+        )
+

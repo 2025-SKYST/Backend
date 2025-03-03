@@ -27,11 +27,12 @@ class ArticleInformationResponse(BaseModel):
     secret: int
     views: int
 
-    password: Optional[str]=None
-
+    password: Optional[str] = None
 
     article_likes: int
     article_comments: int
+
+    problem_numbers: list[int] = []
 
     model_config = {
         "from_attributes": True
@@ -65,7 +66,8 @@ class ArticleInformationResponse(BaseModel):
             protected=article.protected,
             comments_enabled=article.comments_enabled,
             secret=article.secret,
-            password=article.password
+            password=article.password,
+            problem_numbers=article.problem_numbers or []
         )
 
 
@@ -79,6 +81,7 @@ class ArticleDetailResponse(BaseModel):
     protected: int
     comments_enabled: int
     secret: int
+    problem_numbers: list[int] = []
 
     @staticmethod
     def from_article(article: Article) -> Self:
@@ -91,7 +94,8 @@ class ArticleDetailResponse(BaseModel):
             views=article.views,
             protected=article.protected,
             comments_enabled=article.comments_enabled,
-            secret=article.secret
+            secret=article.secret,
+            problem_numbers=article.problem_numbers or []
         )
 
 
@@ -112,6 +116,8 @@ class ArticleSearchInListResponse(BaseModel):
     article_comments: int
     protected: int
     secret: int
+
+    problem_numbers: list[int] = []
 
     model_config = {
         "from_attributes": True
@@ -149,7 +155,8 @@ class ArticleSearchInListResponse(BaseModel):
             article_likes=article_likes,
             article_comments=article_comments,
             protected=article.protected,
-            secret=article.secret
+            secret=article.secret,
+            problem_numbers=article.problem_numbers or []
         )
 
 

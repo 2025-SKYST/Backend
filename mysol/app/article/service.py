@@ -40,6 +40,7 @@ class ArticleService:
         main_image_url: Optional[str],
         category_id: int, 
         images: List[ImageCreateRequest],
+        problem_numbers : Optional[list[int]] = None,
         secret: int = 0,
         protected: int = 0,
         password: Optional[str] = None,
@@ -61,7 +62,8 @@ class ArticleService:
             secret=secret,
             protected=protected,
             password=password,
-            comments_enabled=comments_enabled
+            comments_enabled=comments_enabled,
+            problem_numbers=problem_numbers
         )
 
         if secret == 0:
@@ -82,6 +84,7 @@ class ArticleService:
         article_id: int,
         category_id: int,
         images: List[ImageCreateRequest],
+        problem_numbers : Optional[list[int]] = None,
         article_title: Optional[str] = None,
         article_content: Optional[str] = None,
         article_description: Optional[str] = None,
@@ -117,7 +120,8 @@ class ArticleService:
             secret=secret,
             protected=protected,
             password=password,
-            comments_enabled=comments_enabled
+            comments_enabled=comments_enabled,
+            problem_numbers=problem_numbers
         )
 
         return ArticleDetailResponse.from_article(updated_article)
@@ -234,4 +238,19 @@ class ArticleService:
         # Article 삭제
         await self.article_store.delete_article(article)  # await 추가
 
-    
+    async def get_articles_by_problem_number(
+        self,
+        user: User,
+        problem_number: int,
+        page: int = 1,
+        per_page: int = 10
+    ) -> PaginatedArticleListResponse:
+        """
+        특정 문제 번호를 포함하는 Article 목록을 가져오는 함수 (서비스 계층)
+        """
+        return await self.article_store.get_articles_by_problem_number(
+            problem_number=problem_number,
+            user=user,
+            page=page,
+            per_page=per_page
+        )

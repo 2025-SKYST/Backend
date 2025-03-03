@@ -36,7 +36,8 @@ async def create_article(
             images = article.images,
             protected=article.protected,
             password=article.password,
-            comments_enabled=article.comments_enabled
+            comments_enabled=article.comments_enabled,
+            problem_numbers=article.problem_numbers
             )
     else:
         return await article_service.create_article(
@@ -50,7 +51,8 @@ async def create_article(
             images = article.images,
             protected=article.protected,
             password=article.password,
-            comments_enabled=article.comments_enabled
+            comments_enabled=article.comments_enabled,
+            problem_numbers=article.problem_numbers
             )
 
 # article 수정
@@ -77,7 +79,8 @@ async def update_article(
             secret = article.secret,
             protected=article.protected,
             password=article.password,
-            comments_enabled=article.comments_enabled
+            comments_enabled=article.comments_enabled,
+            problem_numbers=article.problem_numbers
         )
     else : 
         return await article_service.update_article(
@@ -92,7 +95,8 @@ async def update_article(
             secret = article.secret,
             protected=article.protected,
             password=article.password,
-            comments_enabled=article.comments_enabled
+            comments_enabled=article.comments_enabled,
+            problem_numbers=article.problem_numbers
         )
 
 
@@ -245,3 +249,19 @@ async def delete_article(
     article_service: Annotated[ArticleService, Depends()],
 ) -> None:
     await article_service.delete_article(user, article_id)
+
+# 특정 문제 번호를 포함하는 게시글 가져오기
+@article_router.get("/problems/{problem_number}", status_code=200)
+async def get_articles_by_problem_number(
+    article_service: Annotated[ArticleService, Depends()],
+    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    problem_number: int,
+    page: int = Query(1, alias="page"),
+    per_page: int = Query(10, alias="per_page")
+) -> PaginatedArticleListResponse:
+    return await article_service.get_articles_by_problem_number(
+        user=user,
+        problem_number=problem_number,
+        page=page,
+        per_page=per_page
+    )
