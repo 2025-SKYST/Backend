@@ -23,6 +23,20 @@ async def create_blog(
         description=blog_create_request.description
     )
 
+@blog_router.patch("/update", status_code=HTTP_200_OK)
+async def update_blog(
+    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    blog_service: Annotated[BlogService, Depends()],
+    blog_update_request: BlogUpdateRequest
+) -> BlogDetailResponse:
+    return await blog_service.update_blog(
+        user_id=user.id,
+        new_blog_name=blog_update_request.blog_name,
+        new_main_image_URL=blog_update_request.main_image_URL,
+        new_description=blog_update_request.description,
+        new_default_category_id=None
+    )
+
 @blog_router.get("/search", response_model=PaginatedBlogDetailResponse, status_code=HTTP_200_OK)
 async def search_blogs(
     keywords: str,
