@@ -1,4 +1,4 @@
-import os
+import os, sys
 from fastapi import FastAPI, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -33,4 +33,5 @@ async def read_root():
 async def preflight_handler(request: Request, full_path: str):
     print(f"🔥 OPTIONS 요청 도착: {request.method} {request.url}")
     print(f"🔍 요청 헤더: {request.headers}")
+    sys.stdout.flush()
     return Response(status_code=200)
