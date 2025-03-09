@@ -23,15 +23,15 @@ app.add_middleware(
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 app.add_middleware(DefaultSessionMiddleware)
 
-app.include_router(api_router, prefix="/api")
-
-@app.get("/")
-async def read_root():
-    return {"message": "Hello, FastAPI!"}
-
 @app.options("/{full_path:path}")
 async def preflight_handler(request: Request, full_path: str):
     print(f"🔥 OPTIONS 요청 도착: {request.method} {request.url}")
     print(f"🔍 요청 헤더: {request.headers}")
     sys.stdout.flush()
     return Response(status_code=200)
+
+app.include_router(api_router, prefix="/api")
+
+@app.get("/")
+async def read_root():
+    return {"message": "Hello, FastAPI!"}
