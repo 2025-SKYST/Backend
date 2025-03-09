@@ -14,9 +14,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://editorialhub.site", "http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PATCH", "DELETE"],
-    allow_headers=["Authorization", "Content-Type", "Set-Cookie"],
-    expose_headers=["Set-Cookie"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 
@@ -36,7 +36,7 @@ async def preflight_handler(request: Request, full_path: str):
     print(f"🔍 요청 헤더: {request.headers}")
     sys.stdout.flush()
     headers = {
-        "Access-Control-Allow-Origin": "https://editorialhub.site",
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PATCH, DELETE",
         "Access-Control-Allow-Headers": "Authorization, Content-Type, Set-Cookie",
         "Access-Control-Allow-Credentials": "true",
