@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException, Header, Response
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 
 from mysol.app.blog.dto.requests import BlogCreateRequest, BlogUpdateRequest
@@ -36,6 +36,16 @@ async def update_blog(
         new_description=blog_update_request.description,
         new_default_category_id=None
     )
+
+@blog_router.options("/update", status_code=HTTP_200_OK)
+async def options_blog_update():
+    return Response(status_code=200, headers={
+        "Access-Control-Allow-Origin": "https://editorialhub.site",
+        "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Authorization, Content-Type, Cookie",
+        "Access-Control-Allow-Credentials": "true",
+    })
+
 
 @blog_router.get("/search", response_model=PaginatedBlogDetailResponse, status_code=HTTP_200_OK)
 async def search_blogs(
