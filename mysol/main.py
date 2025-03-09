@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -16,7 +16,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["set-cookie"],
+    expose_headers=["*"],
 )
 
 
@@ -30,5 +30,7 @@ async def read_root():
     return {"message": "Hello, FastAPI!"}
 
 @app.options("/{full_path:path}")
-async def preflight_handler(full_path: str):
+async def preflight_handler(request: Request, full_path: str):
+    print(f"🔥 OPTIONS 요청 도착: {request.method} {request.url}")
+    print(f"🔍 요청 헤더: {request.headers}")
     return Response(status_code=200)
