@@ -14,12 +14,14 @@ user_router = APIRouter()
 security = HTTPBearer()
 
 async def get_current_user_from_cookie(
-    user_service: Annotated[UserService, Depends()],
-    access_token: str = Cookie(None)  # ✅ 쿠키에서 Access Token 가져오기
+    request: Request,  # ✅ Request 객체에서 쿠키 읽기
+    user_service: Annotated[UserService, Depends()]
 ) -> User:
     """
     `httpOnly` 쿠키의 `access_token`을 검증하여 사용자 정보를 가져옴.
     """
+    access_token = request.cookies.get("access_token")  # ✅ Request에서 직접 가져오기
+
     if not access_token:
         raise MissingAccessTokenError()
 
@@ -29,6 +31,7 @@ async def get_current_user_from_cookie(
         raise InvalidTokenError()
     
     return user
+
 
 @user_router.post("/signup", response_model=UserSignupResponse, status_code=HTTP_201_CREATED)
 async def signup(
