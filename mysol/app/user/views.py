@@ -65,7 +65,7 @@ async def signin(
         value=access_token,
         httponly=True,  # JavaScript에서 접근 불가능 (XSS 방지)
         secure=True,  # HTTPS에서만 사용 가능
-        samesite="Lax",  # CSRF 방지
+        samesite="None",  # CSRF 방지
         max_age=60 * 10  # 10분 유지
     )
 
@@ -74,7 +74,7 @@ async def signin(
         value=refresh_token,
         httponly=True,  # JavaScript에서 접근 불가능 (XSS 방지)
         secure=True,  # HTTPS에서만 사용 가능 (보안 강화)
-        samesite="Lax",  # CSRF 방지
+        samesite="None",  # CSRF 방지
         max_age=60 * 60 * 3  # ✅ 1일 유지 (보안 강화)
     )
 
