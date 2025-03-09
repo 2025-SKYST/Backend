@@ -102,7 +102,7 @@ async def refresh(
         value=access_token,
         httponly=True,
         secure=True,
-        samesite="Lax",
+        samesite="None",
         max_age=60 * 10  # 10분 유지
     )
 
@@ -112,7 +112,7 @@ async def refresh(
         value=new_refresh_token,
         httponly=True,
         secure=True,
-        samesite="Lax",
+        samesite="None",
         max_age=60 * 60 * 3  # ✅ 1일 유지 (보안 강화)
     )
 
