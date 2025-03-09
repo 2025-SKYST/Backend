@@ -12,10 +12,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://editorialhub.site", "https://www.editorialhub.site" "http://localhost:3000"],
+    allow_origins=["https://editorialhub.site", "https://www.editorialhub.site", "http://localhost:3000"], 
     allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["*"], 
+    allow_headers=["*"],
     expose_headers=["*"],
 )
 
