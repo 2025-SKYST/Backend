@@ -35,4 +35,10 @@ async def preflight_handler(request: Request, full_path: str):
     print(f"🔥 OPTIONS 요청 도착: {request.method} {request.url}")
     print(f"🔍 요청 헤더: {request.headers}")
     sys.stdout.flush()
+    headers = {
+        "Access-Control-Allow-Origin": "https://editorialhub.site",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PATCH, DELETE",
+        "Access-Control-Allow-Headers": "Authorization, Content-Type, Set-Cookie",
+        "Access-Control-Allow-Credentials": "true",
+    }
     return Response(status_code=200)
