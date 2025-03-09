@@ -37,7 +37,7 @@ async def update_blog(
         new_default_category_id=None
     )
 
-@blog_router.options("/update", status_code=HTTP_200_OK)
+@blog_router.options("/update/", status_code=HTTP_200_OK)
 async def options_blog_update():
     return Response(status_code=200, headers={
         "Access-Control-Allow-Origin": "https://editorialhub.site",
