@@ -14,10 +14,11 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://editorialhub.site", "http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
+    allow_methods=["GET", "POST", "PATCH", "DELETE"],
+    allow_headers=["Authorization", "Content-Type", "Set-Cookie"],
+    expose_headers=["Set-Cookie"],
 )
+
 
 
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
