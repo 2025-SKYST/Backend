@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -28,3 +28,7 @@ app.include_router(api_router, prefix="/api")
 @app.get("/")
 async def read_root():
     return {"message": "Hello, FastAPI!"}
+
+@app.options("/{full_path:path}")
+async def preflight_handler(full_path: str):
+    return Response(status_code=200)
