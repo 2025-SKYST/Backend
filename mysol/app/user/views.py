@@ -8,7 +8,7 @@ from mysol.app.user.dto.reponses import UserSignupResponse, UserSigninResponse, 
 from mysol.app.user.service import UserService
 from mysol.app.user.models import User
 from mysol.app.user.errors import InvalidTokenError, MissingAccessTokenError
-from datetime import datetime
+from datetime import datetime, timezone
 
 user_router = APIRouter()
 security = HTTPBearer()  # 🔹 헤더에서 Bearer 토큰을 읽기 위한 FastAPI 보안 모듈
@@ -99,7 +99,7 @@ async def logout(
     refresh_token = logout_request.refresh_token
 
     if refresh_token:
-        await user_service.user_store.block_token(refresh_token, datetime.utcnow()) 
+        await user_service.user_store.block_token(refresh_token, datetime.now(timezone.utc)) 
 
     return {"message": "로그아웃 완료"}
 

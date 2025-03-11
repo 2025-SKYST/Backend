@@ -24,4 +24,5 @@ class MyProfileResponse(BaseModel):
         )
     
 class RefreshResponse(BaseModel):
-    message : str = "리프레쉬 성공"
+    access_token: str
+    refresh_token: str
