@@ -48,3 +48,6 @@ class UserUpdateRequest(BaseModel):
 class UserSigninRequest(BaseModel):
     email: EmailStr
     password: str
+
+class TokenRefreshRequest(BaseModel):
+    refresh_token: str

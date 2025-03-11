@@ -4,14 +4,14 @@ from starlette.status import HTTP_200_OK, HTTP_201_CREATED,HTTP_204_NO_CONTENT
 
 from mysol.app.user.models import User
 comment_router = APIRouter()
-from mysol.app.user.views import get_current_user_from_cookie
+from mysol.app.user.views import get_current_user_from_header
 from mysol.app.comment.service import CommentService
 from mysol.app.comment.dto.requests import CommentCreateRequest, CommentUpdateRequest
 from mysol.app.comment.dto.responses import CommentDetailResponse,CommentListResponse,PaginatedCommentListResponse
 
 @comment_router.post("/article/{article_id}", status_code=HTTP_201_CREATED)
 async def create(
-    user:Annotated[User,Depends(get_current_user_from_cookie)],
+    user:Annotated[User,Depends(get_current_user_from_header)],
     comment_service: Annotated[CommentService, Depends()],
     comment_request: CommentCreateRequest,
     article_id:int,
@@ -27,7 +27,7 @@ async def create(
 
 @comment_router.post("/guestbook/{blog_id}", status_code=HTTP_201_CREATED)
 async def create(
-    user:Annotated[User,Depends(get_current_user_from_cookie)],
+    user:Annotated[User,Depends(get_current_user_from_header)],
     comment_service: Annotated[CommentService, Depends()],
     comment_request: CommentCreateRequest,
     blog_id:int,
@@ -44,7 +44,7 @@ async def create(
 
 @comment_router.patch("/{comment_id}", status_code=HTTP_200_OK)
 async def update(
-    user:Annotated[User,Depends(get_current_user_from_cookie)],
+    user:Annotated[User,Depends(get_current_user_from_header)],
     comment_id:int,
     comment_service: Annotated[CommentService,Depends()],
     comment_request: CommentUpdateRequest
@@ -58,7 +58,7 @@ async def update(
 
 @comment_router.delete("/{comment_id}", status_code=HTTP_204_NO_CONTENT)
 async def delete(
-    user:Annotated[User,Depends(get_current_user_from_cookie)],
+    user:Annotated[User,Depends(get_current_user_from_header)],
     comment_service: Annotated[CommentService,Depends()],
     comment_id:int,
 )-> None:
@@ -72,7 +72,7 @@ async def get_article_comment_list(
     article_id: int,
     page: int,
     comment_service: Annotated[CommentService, Depends()],
-    user: Optional[User] = Depends(get_current_user_from_cookie),  # 여기가 포인트
+    user: Optional[User] = Depends(get_current_user_from_header),  # 여기가 포인트
 ):
     per_page = 10
     
@@ -88,7 +88,7 @@ async def get_guestbook_comment_list(
     blog_id: int,
     page: int,
     comment_service: Annotated[CommentService, Depends()],
-    user: Optional[User] = Depends(get_current_user_from_cookie)
+    user: Optional[User] = Depends(get_current_user_from_header)
 ) -> PaginatedCommentListResponse:
     per_page = 10  # 페이지당 10개(혹은 쿼리 파라미터로 받아도 됨)
     return await comment_service.get_guestbook_list_pagination(

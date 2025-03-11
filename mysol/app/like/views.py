@@ -6,7 +6,7 @@ from mysol.app.like.service import LikeService
 from mysol.app.blog.service import BlogService
 
 from mysol.app.user.models import User
-from mysol.app.user.views import get_current_user_from_cookie
+from mysol.app.user.views import get_current_user_from_header
 
 
 like_router = APIRouter()
@@ -14,7 +14,7 @@ like_router = APIRouter()
 # like 생성
 @like_router.post("/create", status_code=201)
 async def create_like(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     blog_service: Annotated[BlogService, Depends()],
     like_service: Annotated[LikeService, Depends()],
     like: LikeCreateRequest,
@@ -26,7 +26,7 @@ async def create_like(
 # like 삭제
 @like_router.delete("/{article_id}", status_code=204)
 async def delete_like(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     article_id: int,
     like_service: Annotated[LikeService, Depends()],
 ) -> None:
@@ -36,7 +36,7 @@ async def delete_like(
 # 해당 method 를 이용해서 user 가 login 한 자신의 blog 에서 like 를 눌렀는지 확인
 @like_router.get("/blog/press_like/{article_id}", status_code=200)
 async def blog_press_like(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     like_service: Annotated[LikeService, Depends()],
     blog_service: Annotated[BlogService, Depends()],
     article_id: int,

@@ -72,7 +72,6 @@ class ImageStore:
         s3_path : str,
         file: UploadFile = File(...)
     ) -> str : 
-        # S3 는 별도의 session 을 이용해야 한다고 합니다.
         session = aioboto3.Session()
         async with session.client(
             "s3",

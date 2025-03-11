@@ -6,7 +6,7 @@ from mysol.app.subscription.dto.responses import SubscriptionDetailResponse, Pag
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from mysol.app.user.models import User
 from mysol.app.blog.service import BlogService
-from mysol.app.user.views import get_current_user_from_cookie
+from mysol.app.user.views import get_current_user_from_header
 from mysol.app.subscription.errors import BlogNotFoundError
 from mysol.app.blog.store import BlogStore
 from mysol.app.blog.errors import BlogNotFoundError
@@ -16,7 +16,7 @@ subscription_router = APIRouter()
 
 @subscription_router.post("", status_code=HTTP_201_CREATED)
 async def add_subscription(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],  # 로그인한 사용자
+    user: Annotated[User, Depends(get_current_user_from_header)],  # 로그인한 사용자
     subscribe_service: Annotated[SubscriptionService, Depends()],
     blog_service: Annotated[BlogService, Depends()],
     subscribed_id: int,  # 구독할 블로그의 주소 이름
@@ -40,7 +40,7 @@ async def add_subscription(
 
 @subscription_router.get("/my_subscriptions/{page}", response_model=PaginatedSubscriptionResponse)
 async def get_my_subscriptions(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],  # 로그인한 사용자,
+    user: Annotated[User, Depends(get_current_user_from_header)],  # 로그인한 사용자,
     page: int,
     subscribe_service: Annotated[SubscriptionService, Depends()]
 ) -> PaginatedSubscriptionResponse:
@@ -56,7 +56,7 @@ async def get_my_subscriptions(
 
 @subscription_router.get("/my_subscribers/{page}", response_model=PaginatedSubscriptionResponse)
 async def get_my_subscribers(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],  # 로그인한 사용자
+    user: Annotated[User, Depends(get_current_user_from_header)],  # 로그인한 사용자
     page: int,
     subscribe_service: Annotated[SubscriptionService, Depends()]
 ) -> PaginatedSubscriptionResponse:
@@ -123,7 +123,7 @@ async def get_subscribers(
 
 @subscription_router.delete("", status_code=HTTP_200_OK)
 async def cancel_subscription(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],  # 로그인한 사용자
+    user: Annotated[User, Depends(get_current_user_from_header)],  # 로그인한 사용자
     subscribe_service: Annotated[SubscriptionService, Depends()],
     subscribed_address_name: str,  # 구독 취소할 블로그의 주소 이름
 ):
@@ -136,7 +136,7 @@ async def cancel_subscription(
 
 @subscription_router.get("/is_subscribed", status_code=HTTP_200_OK)
 async def is_blog_subscribing(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],  # 로그인한 사용자
+    user: Annotated[User, Depends(get_current_user_from_header)],  # 로그인한 사용자
     subscribe_service: Annotated[SubscriptionService, Depends()],
     blog_service: Annotated[BlogService, Depends()],
     subscriber_id: int  # 구독 여부를 확인할 블로그 ID
@@ -156,7 +156,7 @@ async def is_blog_subscribing(
 
 @subscription_router.get("/is_subscribing", status_code=HTTP_200_OK)
 async def is_subscribing(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],  # 로그인한 사용자
+    user: Annotated[User, Depends(get_current_user_from_header)],  # 로그인한 사용자
     subscribe_service: Annotated[SubscriptionService, Depends()],
     blog_service: Annotated[BlogService, Depends()],
     subscribed_id: int  # 구독 여부를 확인할 블로그 ID

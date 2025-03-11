@@ -8,12 +8,12 @@ from mysol.app.category.models import Category
 from mysol.app.category.service import CategoryService
 from mysol.app.user.models import User
 category_router = APIRouter()
-from mysol.app.user.views import get_current_user_from_cookie
+from mysol.app.user.views import get_current_user_from_header
 
 #카테고리를 생성하는 API
 @category_router.post("/create", status_code=HTTP_201_CREATED)
 async def create(
-    user:Annotated[User,Depends(get_current_user_from_cookie)],
+    user:Annotated[User,Depends(get_current_user_from_header)],
     category_create_request:CategoryCreateRequest,
     category_service: Annotated[CategoryService, Depends()],
 )-> CategoryDetailResponse:
@@ -35,7 +35,7 @@ async def create(
 #현재 유저가 지니고 있는 카테고리들을 불러오는 API
 @category_router.get("/list/user", status_code=HTTP_200_OK)
 async def get_list(
-    user:Annotated[User,Depends(get_current_user_from_cookie)],
+    user:Annotated[User,Depends(get_current_user_from_header)],
     category_service:Annotated[CategoryService,Depends()],
 )-> CategoryFinalResponse:
     return await category_service.list_categories(user)
@@ -50,7 +50,7 @@ async def get_list_by_blog(
 #특정 카테고리의 이름을 바꾸는 API
 @category_router.patch("/{category_id}", status_code=HTTP_200_OK)
 async def update_category(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     category_id:int,
     update_request: CategoryUpdateRequest,
     category_service: Annotated[CategoryService, Depends()],
@@ -63,7 +63,7 @@ async def update_category(
 
 @category_router.delete("/{category_id}",status_code=HTTP_204_NO_CONTENT)
 async def delete_category(
-    user:Annotated[User,Depends(get_current_user_from_cookie)],
+    user:Annotated[User,Depends(get_current_user_from_header)],
     category_id:int,
     category_service:Annotated[CategoryService,Depends()],
 )-> None:

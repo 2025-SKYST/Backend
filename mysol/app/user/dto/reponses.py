@@ -7,8 +7,8 @@ class UserSignupResponse(BaseModel):
     username: str
 
 class UserSigninResponse(BaseModel):
-    message : str = "로그인 성공"
-    username: str
+    access_token : str
+    refresh_token : str
 
 class MyProfileResponse(BaseModel):
     user_id: int

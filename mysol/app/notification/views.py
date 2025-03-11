@@ -7,14 +7,14 @@ from mysol.app.notification.dto.responses import NotificationResponse, Notificat
 from mysol.app.user.models import User
 from mysol.app.notification.models import Notification
 from mysol.app.notification.service import NotificationService
-from mysol.app.user.views import get_current_user_from_cookie
+from mysol.app.user.views import get_current_user_from_header
 
 notification_router = APIRouter()
 
 
 # @notification_router.get("/my_notifications")
 # async def get_notifications_by_user(
-#     user: Annotated[User, Depends(get_current_user_from_cookie)],
+#     user: Annotated[User, Depends(get_current_user_from_header)],
 #     notification_service: Annotated[NotificationService, Depends()]
 # ):
 #     notifications: list[Notification] = await notification_service.get_notifications_by_user(user)
@@ -25,7 +25,7 @@ notification_router = APIRouter()
 #     return response
 @notification_router.get("/my_notifications")
 async def get_notifications_by_user(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     notification_service: Annotated[NotificationService, Depends()],
     page: int,
     type: Optional[int] = None,
@@ -40,7 +40,7 @@ async def get_notifications_by_user(
 
 @notification_router.delete("/my_notifications")
 async def delete_notification(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     notification_delete_request: NotificationDeleteRequest,
     notification_service: Annotated[NotificationService, Depends()]
 )->str:
@@ -49,7 +49,7 @@ async def delete_notification(
 
 @notification_router.patch("/my_notifications")
 async def check_notification(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     notification_check_request: NotificationCheckRequest,
     notification_service: Annotated[NotificationService, Depends()]
 ) -> str:

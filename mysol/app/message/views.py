@@ -6,13 +6,13 @@ from mysol.app.message.dto.requests import MessageCreateRequest, MessageUpdateRe
 from mysol.app.message.dto.responses import MessageDetailResponse, PaginatedMessageListResponse
 from mysol.app.user.models import User
 from mysol.app.message.service import MessageService
-from mysol.app.user.views import get_current_user_from_cookie
+from mysol.app.user.views import get_current_user_from_header
 
 message_router = APIRouter()
 
 @message_router.post("", status_code=201)
 async def send_message(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     message_request: MessageCreateRequest,
     message_service: Annotated[MessageService, Depends()]
 ) -> MessageDetailResponse:
@@ -24,7 +24,7 @@ async def send_message(
 
 @message_router.get("/received", status_code=200)
 async def get_received_messages(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     message_service: Annotated[MessageService, Depends()],
     page: int
 ) -> PaginatedMessageListResponse:
@@ -33,7 +33,7 @@ async def get_received_messages(
 
 @message_router.get("/sent", status_code=200)
 async def get_sent_messages(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     message_service: Annotated[MessageService, Depends()],
     page: int
 ) -> PaginatedMessageListResponse:
@@ -42,7 +42,7 @@ async def get_sent_messages(
 
 @message_router.get("/{message_id}", status_code=200)
 async def read_message(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     message_id: int,
     message_service: Annotated[MessageService, Depends()]
 ) -> MessageDetailResponse:
@@ -50,7 +50,7 @@ async def read_message(
 
 @message_router.delete("/{message_id}", status_code=204)
 async def delete_message(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     message_id: int,
     message_service: Annotated[MessageService, Depends()]
 ) -> None:

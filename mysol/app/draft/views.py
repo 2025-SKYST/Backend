@@ -6,7 +6,7 @@ from mysol.app.draft.service import DraftService
 from mysol.app.blog.service import BlogService
 
 from mysol.app.user.models import User
-from mysol.app.user.views import get_current_user_from_cookie
+from mysol.app.user.views import get_current_user_from_header
 
 
 draft_router = APIRouter()
@@ -14,7 +14,7 @@ draft_router = APIRouter()
 # draft 생성
 @draft_router.post("/create", status_code=201)
 async def create_draft(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     draft: DraftCreateRequest,
     draft_service: Annotated[DraftService, Depends()],
     blog_service: Annotated[BlogService, Depends()],
@@ -31,7 +31,7 @@ async def create_draft(
 # article 수정
 @draft_router.patch("/update/{draft_id}", status_code=200)
 async def update_draft(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     draft_id: int,
     draft: DraftUpdateRequest,
     blog_service: Annotated[BlogService, Depends()],
@@ -49,7 +49,7 @@ async def update_draft(
 @draft_router.get("/get/{draft_id}", status_code=200)
 async def get_draft_by_id(
     draft_service: Annotated[DraftService, Depends()],
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     draft_id : int
 ) -> DraftResponse :
     return await draft_service.get_draft_by_id(user, draft_id)
@@ -60,7 +60,7 @@ async def get_draft_by_id(
 @draft_router.get("/blogs/{blog_id}/{page}", status_code=200)
 async def get_drafts_in_blog(
     draft_service: Annotated[DraftService, Depends()],
-    user : Annotated[User, Depends(get_current_user_from_cookie)],
+    user : Annotated[User, Depends(get_current_user_from_header)],
     blog_id : int,
     page: int
 ) -> DraftListResponse:
@@ -74,7 +74,7 @@ async def get_drafts_in_blog(
 # draft 삭제
 @draft_router.delete("/delete/{draft_id}", status_code=204)
 async def delete_article(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     draft_id: int,
     draft_service: Annotated[DraftService, Depends()],
 ) -> None:

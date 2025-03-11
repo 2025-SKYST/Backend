@@ -6,14 +6,14 @@ from mysol.app.blog.dto.requests import BlogCreateRequest, BlogUpdateRequest
 from mysol.app.blog.dto.responses import BlogDetailResponse, PaginatedBlogDetailResponse
 from mysol.app.user.models import User
 from mysol.app.blog.service import BlogService
-from mysol.app.user.views import get_current_user_from_cookie
+from mysol.app.user.views import get_current_user_from_header
 
 blog_router = APIRouter()
 
 
 @blog_router.post("", status_code=HTTP_201_CREATED)
 async def create_blog(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     blog_service: Annotated[BlogService, Depends()],
     blog_create_request: BlogCreateRequest
 ) -> BlogDetailResponse:
@@ -25,7 +25,7 @@ async def create_blog(
 
 @blog_router.patch("/update", status_code=HTTP_200_OK)
 async def update_blog(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     blog_service: Annotated[BlogService, Depends()],
     blog_update_request: BlogUpdateRequest
 ) -> BlogDetailResponse:
@@ -61,7 +61,7 @@ async def search_blogs(
 
 @blog_router.get("/my_blog")
 async def get_blog_by_user(
-    user: Annotated[User, Depends(get_current_user_from_cookie)],
+    user: Annotated[User, Depends(get_current_user_from_header)],
     blog_service: Annotated[BlogService, Depends()]
 ) -> BlogDetailResponse:
     if user:
