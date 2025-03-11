@@ -60,7 +60,7 @@ async def signin(
         signin_request.email, signin_request.password
     )
 
-    user=user_service.get_user_by_email(signin_request.email)
+    user= await user_service.get_user_by_email(signin_request.email)
 
     return UserSigninResponse(
         access_token=access_token,
