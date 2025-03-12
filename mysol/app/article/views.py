@@ -7,7 +7,7 @@ from mysol.app.blog.service import BlogService
 
 from mysol.app.user.models import User
 from mysol.app.image.models import Image
-from mysol.app.user.views import get_current_user_from_header
+from mysol.app.user.views import get_current_user_from_header, get_current_user_from_header_optional
 
 
 article_router = APIRouter()
@@ -224,22 +224,24 @@ async def get_articles_by_words_in_blog(
         user=user
     )
 
-# 전체 검색 기능 지원
 @article_router.get("/search/{searching_words}", status_code=200)
 async def get_articles_by_word(
     article_service: Annotated[ArticleService, Depends()],
-    user : Annotated[User, Depends(get_current_user_from_header)],
+    user: Annotated[Optional[User], Depends(get_current_user_from_header_optional)],
     page: int,
     searching_words: str,
+    sort_by: Optional[str] = Query("latest")  # "latest", "likes", "views" 중 선택 가능
 ) -> PaginatedArticleListResponse:
     per_page = 10
     return await article_service.get_articles_by_words_and_blog_id(
-        searching_words = searching_words, 
-        blog_id = None,
-        page = page,
-        per_page = per_page,
-        user=user
+        searching_words=searching_words,
+        blog_id=None,
+        page=page,
+        per_page=per_page,
+        user=user,
+        sort_by=sort_by
     )
+
 
 # article 삭제
 @article_router.delete("/delete/{article_id}", status_code=204)
@@ -250,18 +252,20 @@ async def delete_article(
 ) -> None:
     await article_service.delete_article(user, article_id)
 
-# 특정 문제 번호를 포함하는 게시글 가져오기
+# 문제 번호로 검색 (로그인 여부에 상관없이 호출 가능)
 @article_router.get("/problems/{problem_number}", status_code=200)
 async def get_articles_by_problem_number(
     article_service: Annotated[ArticleService, Depends()],
-    user: Annotated[User, Depends(get_current_user_from_header)],
+    user: Annotated[Optional[User], Depends(get_current_user_from_header_optional)],
     problem_number: int,
     page: int = Query(1, alias="page"),
-    per_page: int = Query(10, alias="per_page")
+    per_page: int = Query(10, alias="per_page"),
+    sort_by: Optional[str] = Query("latest")
 ) -> PaginatedArticleListResponse:
     return await article_service.get_articles_by_problem_number(
         user=user,
         problem_number=problem_number,
         page=page,
-        per_page=per_page
+        per_page=per_page,
+        sort_by=sort_by
     )

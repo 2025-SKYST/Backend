@@ -40,10 +40,10 @@ class ArticleInformationResponse(BaseModel):
 
     @staticmethod
     def from_article(
-        article: Optional[Article], 
-        blog_name: str, 
-        blog_main_image_url: Optional[str], 
-        article_likes: int, 
+        article: Optional[Article],
+        blog_name: str,
+        blog_main_image_url: Optional[str],
+        article_likes: int,
         article_comments: int
     ) -> Self:
         if article is None:
@@ -125,21 +125,28 @@ class ArticleSearchInListResponse(BaseModel):
 
     @staticmethod
     def from_article(
-        article: Optional[Article], 
-        blog_name: str, 
-        blog_main_image_url: Optional[str], 
-        article_likes: int, 
+        article: Optional[Article],
+        blog_name: str,
+        blog_main_image_url: Optional[str],
+        article_likes: int,
         article_comments: int,
-        user: User 
+        user: Optional[User]
     ) -> Self:
         if article is None:
             raise ArticleNotFoundError
-        
-        # 🔥 description 80자 제한 로직 추가
-        if article.protected == 0 or article.blog.user_id == user.id:
-            return_description = article.description[:80] + "…" if len(article.description) > 80 else article.description
+
+        # 로그인한 경우와 로그인하지 않은 경우에 대해 다른 설명 처리
+        if user:
+            if article.protected == 0 or article.blog.user_id == user.id:
+                return_description = article.description[:80] + "…" if len(article.description) > 80 else article.description
+            else:
+                return_description = "🔒 보호된 게시글입니다."
         else:
-            return_description = "🔒 보호된 게시글입니다."
+            # 로그인하지 않은 경우: 보호글(protected==1)은 무조건 보호 메시지 출력
+            if article.protected == 1:
+                return_description = "🔒 보호된 게시글입니다."
+            else:
+                return_description = article.description[:80] + "…" if len(article.description) > 80 else article.description
 
         return ArticleSearchInListResponse(
             id=article.id,
@@ -158,6 +165,7 @@ class ArticleSearchInListResponse(BaseModel):
             secret=article.secret,
             problem_numbers=article.problem_numbers or []
         )
+
 
 
 class PaginatedArticleListResponse(BaseModel):

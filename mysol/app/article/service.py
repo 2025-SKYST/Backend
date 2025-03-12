@@ -182,10 +182,16 @@ class ArticleService:
         blog_id: int | None,
         page: int,
         per_page: int,
-        user : User
+        user: User | None,
+        sort_by: str = "latest"
     ) -> PaginatedArticleListResponse:
         return await self.article_store.get_articles_by_words_and_blog_id(
-            searching_words=searching_words, blog_id=blog_id, page=page, per_page=per_page, user=user
+            searching_words=searching_words,
+            blog_id=blog_id,
+            page=page,
+            per_page=per_page,
+            user=user,
+            sort_by=sort_by
         )
     
     async def get_articles_of_subscriptions(
@@ -240,17 +246,16 @@ class ArticleService:
 
     async def get_articles_by_problem_number(
         self,
-        user: User,
+        user: User | None,
         problem_number: int,
         page: int = 1,
-        per_page: int = 10
+        per_page: int = 10,
+        sort_by: str = "latest"
     ) -> PaginatedArticleListResponse:
-        """
-        특정 문제 번호를 포함하는 Article 목록을 가져오는 함수 (서비스 계층)
-        """
         return await self.article_store.get_articles_by_problem_number(
             problem_number=problem_number,
             user=user,
             page=page,
-            per_page=per_page
+            per_page=per_page,
+            sort_by=sort_by
         )

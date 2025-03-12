@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Response, Request, HTTPException
-from typing import Annotated
+from typing import Annotated, Optional
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
@@ -11,7 +11,7 @@ from mysol.app.user.errors import InvalidTokenError, MissingAccessTokenError
 from datetime import datetime, timezone
 
 user_router = APIRouter()
-security = HTTPBearer()  # 🔹 헤더에서 Bearer 토큰을 읽기 위한 FastAPI 보안 모듈
+security = HTTPBearer(auto_error=False)  # 🔹 헤더에서 Bearer 토큰을 읽기 위한 FastAPI 보안 모듈
 
 async def get_current_user_from_header(
     credentials: Annotated[HTTPAuthorizationCredentials, Depends(security)],
@@ -31,6 +31,28 @@ async def get_current_user_from_header(
         raise InvalidTokenError()
     
     return user
+
+async def get_current_user_from_header_optional(
+    credentials: Annotated[Optional[HTTPAuthorizationCredentials], Depends(security)],
+    user_service: Annotated[UserService, Depends()]
+) -> Optional[User]:
+    """
+    Authorization 헤더에 Bearer 토큰이 있다면 해당 토큰을 검증하여 User를 반환하고,
+    없거나 검증 실패 시 None을 반환합니다.
+    """
+    if not credentials:
+        return None
+
+    access_token = credentials.credentials  # Bearer 토큰 추출
+    try:
+        email = user_service.validate_access_token(access_token)  # 토큰 검증 및 이메일 확인
+        user = await user_service.get_user_by_email(email)
+        if not user:
+            return None
+        return user
+    except Exception:
+        # 토큰 검증 실패 시 None 반환 (추후 로깅 등 추가 가능)
+        return None
 
 @user_router.post("/signup", response_model=UserSignupResponse, status_code=HTTP_201_CREATED)
 async def signup(

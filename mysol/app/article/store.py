@@ -2,7 +2,7 @@ from functools import cache
 from fastapi import Depends
 from typing import Annotated, Sequence, List, Optional
 from datetime import datetime, timedelta, timezone
-from sqlalchemy import Select, select, or_, and_, func, update, cast, String
+from sqlalchemy import Select, select, or_, and_, func, update, cast, String, text
 from sqlalchemy.orm import joinedload, aliased, Mapped
 from sqlalchemy.sql.elements import ClauseElement
 from sqlalchemy.sql.expression import func
@@ -560,13 +560,14 @@ class ArticleStore :
     @transactional
     async def get_articles_by_words_and_blog_id(
         self,
-        user: User,
+        user: User | None,  # 이제 Optional[User]
         searching_words: str | None = None,
         blog_id: int | None = None,
         page: int = 1,
-        per_page: int = 10
+        per_page: int = 10,
+        sort_by: str = "latest"   # 정렬 조건 추가: "latest", "likes", "views"
     ) -> PaginatedArticleListResponse:
-        # 검색어가 없으면 빈 리스트와 0 개수 반환
+        # 검색어가 없으면 빈 결과 반환
         if not searching_words:
             return PaginatedArticleListResponse(
                 page=page,
@@ -577,8 +578,6 @@ class ArticleStore :
 
         # 검색어를 공백으로 분리
         words = searching_words.split()
-
-        # 제목과 내용 중 하나라도 단어를 포함해야 함
         search_conditions = [
             or_(
                 Article.title.ilike(f"%{word}%"),
@@ -586,31 +585,46 @@ class ArticleStore :
             )
             for word in words
         ]
-
-        # 블로그 ID가 있는 경우, 블로그 ID 조건 추가
         if blog_id is not None:
             search_conditions.append(Article.blog_id == blog_id)
-        
-        # 오프셋 계산
+
         offset_val = (page - 1) * per_page
-        # 접근 조건 추가
-        access_condition = self.get_access_condition(user)
-        if blog_id is None:
-            access_condition=self.get_access_condition(user, 0)
+
+        # 로그인 여부에 따른 접근 조건 설정
+        if user:
+            # 기존 get_access_condition()를 사용 (예: 작성자 본인의 비밀글은 포함)
+            if blog_id is None:
+                access_condition = self.get_access_condition(user, 0)
+            else:
+                access_condition = self.get_access_condition(user)
+        else:
+            # 로그인하지 않은 경우, 모든 비밀글(secret=1)은 제외
+            access_condition = (Article.secret == 0)
+
         base_query = self.build_base_query(access_condition)
+
+        # 정렬 조건에 따른 ORDER BY 절 구성
+        if sort_by == "latest":
+            order_clause = Article.created_at.desc()
+        elif sort_by == "likes":
+            # build_base_query()에서 'likes' 집계 컬럼이 함께 선택되었다고 가정
+            order_clause = text("likes DESC")
+        elif sort_by == "views":
+            order_clause = Article.views.desc()
+        else:
+            order_clause = Article.created_at.desc()
+
         stmt = (
             base_query
-            .where(and_(*search_conditions))  # 검색 조건 및 접근 조건 적용
-            .order_by(Article.created_at.desc())
+            .where(and_(*search_conditions))
+            .order_by(order_clause)
             .offset(offset_val)
-            .limit(per_page)           # 상위 N개 제한
+            .limit(per_page)
         )
 
-        # 쿼리 실행 및 결과 처리
         result = await SESSION.execute(stmt)
         rows = result.all()
 
-        # Pydantic 모델로 변환
         articles = [
             ArticleSearchInListResponse.from_article(
                 article=row.Article,
@@ -618,12 +632,11 @@ class ArticleStore :
                 blog_main_image_url=row.blog_main_image_url,
                 article_likes=row.likes,
                 article_comments=row.comments,
-                user=user
+                user=user  # user가 없을 수도 있음; DTO 내부에서 비밀글 처리 로직이 작동해야 함
             )
             for row in rows
         ]
 
-        # 전체 개수 계산
         total_count_stmt = (
             select(func.count(func.distinct(Article.id)))
             .join(Blog, Blog.id == Article.blog_id)
@@ -712,35 +725,42 @@ class ArticleStore :
     async def get_articles_by_problem_number(
         self,
         problem_number: int,
-        user: User,
+        user: User | None,  # Optional 사용자
         page: int = 1,
-        per_page: int = 10
+        per_page: int = 10,
+        sort_by: str = "latest"
     ) -> PaginatedArticleListResponse:
-        """
-        특정 문제 번호를 포함하는 Article 목록을 가져오는 함수 (MySQL 대응)
-        """
         offset_val = (page - 1) * per_page
 
-        # 접근 조건 생성
-        access_condition = self.get_access_condition(user, 0)
+        if user:
+            access_condition = self.get_access_condition(user, 0)
+        else:
+            access_condition = (Article.secret == 0)
+
         base_query = self.build_base_query(access_condition)
 
-        # ✅ JSON_CONTAINS 사용 시, NULL 방지를 위해 ifnull 적용
+        if sort_by == "latest":
+            order_clause = Article.created_at.desc()
+        elif sort_by == "likes":
+            order_clause = text("likes DESC")
+        elif sort_by == "views":
+            order_clause = Article.views.desc()
+        else:
+            order_clause = Article.created_at.desc()
+
         stmt = (
             base_query
             .filter(
                 func.json_contains(func.ifnull(Article.problem_numbers, '[]'), str(problem_number))
             )
-            .order_by(Article.created_at.desc())
+            .order_by(order_clause)
             .offset(offset_val)
             .limit(per_page)
         )
 
-        # 쿼리 실행
         result = await SESSION.execute(stmt)
         rows = result.all()
 
-        # Pydantic 모델로 변환
         articles = [
             ArticleSearchInListResponse.from_article(
                 article=row.Article,
@@ -753,13 +773,12 @@ class ArticleStore :
             for row in rows
         ]
 
-        # 전체 개수 계산
         total_count_stmt = (
             select(func.count(func.distinct(Article.id)))
             .join(Blog, Blog.id == Article.blog_id)
             .filter(
                 func.json_contains(func.ifnull(Article.problem_numbers, '[]'), str(problem_number)),
-                access_condition  # 접근 조건 필터링 추가
+                access_condition
             )
         )
         total_count = await SESSION.scalar(total_count_stmt)
@@ -770,4 +789,3 @@ class ArticleStore :
             total_count=total_count or 0,
             articles=articles,
         )
-
