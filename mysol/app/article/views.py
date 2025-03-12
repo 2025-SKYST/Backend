@@ -215,7 +215,7 @@ async def get_articles_by_words_in_blog(
     searching_words: str | None = None,
     blog_id : int | None = None
 ) -> PaginatedArticleListResponse:
-    per_page = 10
+    per_page = 2
     return await article_service.get_articles_by_words_and_blog_id(
         searching_words = searching_words, 
         blog_id = blog_id,
