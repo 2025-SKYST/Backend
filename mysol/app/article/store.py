@@ -243,20 +243,32 @@ class ArticleStore :
         return result.scalar_one_or_none()
 
     @transactional
-    async def get_article_information_by_id(self, article_id: int, user: User, password: Optional[str] = None) -> ArticleInformationResponse:
+    async def get_article_information_by_id(
+        self,
+        article_id: int,
+        user: Optional[User],
+        password: Optional[str] = None
+    ) -> ArticleInformationResponse:
         base_query = self.build_base_query()
         stmt = base_query.filter(Article.id == article_id)
         
         result = await SESSION.execute(stmt)
         row = result.one_or_none()
+        if row is None:
+            raise ArticleNotFoundError()
         article = row.Article
         blog = await SESSION.get(Blog, article.blog_id)
-        if article.protected == 1 and blog.user_id != user.id :
-            if not password:
-                raise NoAuthoriztionError()
-            if article.password != password:
-                raise NoAuthoriztionError()
-
+        
+        # secret 게시글은 로그인하지 않았거나 작성자가 아닌 경우 열람 불가
+        if article.secret == 1:
+            if not user or blog.user_id != user.id:
+                raise NoAuthoriztionError("비밀글은 작성자만 열람할 수 있습니다.")
+        
+        # 보호글은 작성자가 아닌 경우 반드시 올바른 비밀번호가 필요
+        if article.protected == 1 and (not user or blog.user_id != user.id):
+            if not password or article.password != password:
+                raise NoAuthoriztionError("보호된 게시글은 올바른 비밀번호가 필요합니다.")
+        
         article_response = ArticleInformationResponse.from_article(
             article=article,
             blog_name=row.blog_name,
@@ -264,11 +276,12 @@ class ArticleStore :
             article_likes=row.likes,
             article_comments=row.comments,
         )
-
+        
         if article_response.category_id == blog.default_category_id:
             article_response.category_id = 0
 
         return article_response
+
     
     
     @transactional

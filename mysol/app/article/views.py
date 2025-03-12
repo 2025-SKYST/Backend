@@ -100,15 +100,15 @@ async def update_article(
         )
 
 
-# article 정보 가져오기
 @article_router.get("/get/{article_id}", status_code=200)
 async def get_article_information_by_id(
     article_service: Annotated[ArticleService, Depends()],
-    user: Annotated[User, Depends(get_current_user_from_header)],
-    article_id : int,
+    user: Annotated[Optional[User], Depends(get_current_user_from_header_optional)],
+    article_id: int,
     password: Optional[str] = Query(None, description="보호된 글의 비밀번호")
-) -> ArticleInformationResponse :
+) -> ArticleInformationResponse:
     return await article_service.get_article_information_by_id(user, article_id, password)
+
 
 # blog 내 인기글 가져오기
 @article_router.get("/today_mysol", status_code=200)

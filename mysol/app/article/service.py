@@ -126,18 +126,26 @@ class ArticleService:
 
         return ArticleDetailResponse.from_article(updated_article)
 
-    async def get_article_information_by_id(self, user: User, article_id: int, password: Optional[str] = None) -> ArticleInformationResponse:
+    async def get_article_information_by_id(self, user: Optional[User], article_id: int, password: Optional[str] = None) -> ArticleInformationResponse:
         article = await self.article_store.get_article_by_id(article_id)
         
         # Article 존재 확인
         if article is None:
             raise ArticleNotFoundError()
-
-        # 비밀글 & 보호된 글 접근 권한 확인
-        if article.secret == 1 and article.blog.user_id != user.id:
-            raise NoAuthoriztionError()
-        if article.blog.user_id != user.id and article.protected == 1 and article.password != password:
-            raise NoAuthoriztionError()
+        
+        # 사용자 여부에 따라 권한 확인
+        if user:
+            # 로그인한 경우: 작성자 본인의 글은 모두 허용, 그렇지 않다면 secret은 불허, protected는 비밀번호 체크
+            if article.secret == 1 and article.blog.user_id != user.id:
+                raise NoAuthoriztionError("비밀글은 작성자만 열람할 수 있습니다.")
+            if article.blog.user_id != user.id and article.protected == 1 and article.password != password:
+                raise NoAuthoriztionError("보호된 게시글은 올바른 비밀번호가 필요합니다.")
+        else:
+            # 로그인하지 않은 경우: secret 게시글은 모두 불허하고, 보호된 게시글은 비밀번호가 반드시 일치해야 함.
+            if article.secret == 1:
+                raise NoAuthoriztionError("로그인하지 않은 사용자는 비밀글을 열람할 수 없습니다.")
+            if article.protected == 1 and article.password != password:
+                raise NoAuthoriztionError("보호된 게시글은 올바른 비밀번호가 필요합니다.")
 
         # 조회수 증가
         await self.article_store.increment_article_views(article_id)
