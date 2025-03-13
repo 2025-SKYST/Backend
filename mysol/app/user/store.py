@@ -6,6 +6,7 @@ from mysol.app.user.models import User, BlockedToken
 from mysol.database.annotation import transactional
 from mysol.database.connection import SESSION
 from mysol.app.user.hashing import Hasher
+from mysol.app.user.errors import UserNameAlreadyExistsError
 
 class UserStore:
     @transactional
@@ -33,14 +34,23 @@ class UserStore:
 
     @transactional
     async def update_user(
-        self, user: User, username: Optional[str], email: Optional[str], new_password: Optional[str]
+        self, user_id: int, username: Optional[str], email: Optional[str], new_password: Optional[str]
     ) -> User:
+        user= await self.get_user_by_id(user_id)
+
         if username:
+            if await self.get_user_by_username(username=username):
+                raise UserNameAlreadyExistsError()
             user.username = username
         if email:
             user.email = email
         if new_password:
             user.password = new_password
+        SESSION.merge(user)
+        await SESSION.flush()
+        await SESSION.refresh(user)
+
+
         return user
 
     @transactional

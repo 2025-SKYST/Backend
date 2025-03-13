@@ -62,6 +62,16 @@ class UserService:
             raise InvalidPasswordError()
         
         return self.issue_tokens(user.email)
+    
+    async def update_user(
+        self,
+        user_id : int,
+        new_user_name: str|None,
+        new_email: str|None,
+        new_password: str|None,
+    ) -> User:
+        user = await self.user_store.update_user(user_id=user_id, username=new_user_name, email=new_email, new_password=new_password)
+        return user
 
     def issue_tokens(self, email: str) -> tuple[str, str]:
         """

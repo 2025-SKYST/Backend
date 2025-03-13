@@ -42,8 +42,7 @@ class UserSigninRequest(BaseModel):
 class UserUpdateRequest(BaseModel):
     email: Optional[EmailStr] = None
     username: Optional[str] = None
-    old_password: str
-    new_password: Optional[Annotated[str, AfterValidator(validate_password)]] = None
+    new_password: Optional[str] = None
 
 class UserSigninRequest(BaseModel):
     email: EmailStr

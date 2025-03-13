@@ -3,7 +3,7 @@ from typing import Annotated, Optional
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from mysol.app.user.dto.requests import UserSignupRequest, UserSigninRequest, TokenRefreshRequest
+from mysol.app.user.dto.requests import UserSignupRequest, UserSigninRequest, TokenRefreshRequest, UserUpdateRequest
 from mysol.app.user.dto.reponses import UserSignupResponse, UserSigninResponse, MyProfileResponse, RefreshResponse
 from mysol.app.user.service import UserService
 from mysol.app.user.models import User
@@ -131,3 +131,11 @@ async def me(user: Annotated[User, Depends(get_current_user_from_header)]) -> My
     현재 로그인된 사용자의 프로필 정보를 반환.
     """
     return MyProfileResponse.from_user(user)
+
+@user_router.patch("/me", status_code=HTTP_200_OK)
+async def updateme(
+    user: Annotated[User, Depends(get_current_user_from_header)], 
+    user_update_request: UserUpdateRequest,
+    user_service: Annotated[UserService, Depends()],
+) -> MyProfileResponse:
+    return MyProfileResponse.from_user(await user_service.update_user(user_id=user.id, new_email=user_update_request.email, new_user_name=user_update_request.username, new_password=user_update_request.new_password))
