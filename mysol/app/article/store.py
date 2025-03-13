@@ -20,7 +20,7 @@ from mysol.app.user.models import User
 from mysol.app.image.models import Image
 from mysol.app.image.store import ImageStore
 from mysol.app.image.dto.requests import ImageCreateRequest
-from mysol.app.article.errors import NoAuthoriztionError
+from mysol.app.article.errors import NoAuthoriztionError, ArticleNotFoundError
 from mysol.app.user.models import User
 
 

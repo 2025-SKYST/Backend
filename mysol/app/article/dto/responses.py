@@ -13,6 +13,7 @@ class ArticleInformationResponse(BaseModel):
     id: int
     title: str
     content: str
+    description: str
     created_at: datetime
     updated_at: datetime
     article_main_image_url: Optional[str] = None
@@ -53,6 +54,7 @@ class ArticleInformationResponse(BaseModel):
             id=article.id,
             title=article.title,
             content=article.content,
+            description=article.description,
             created_at=article.created_at,
             updated_at=article.updated_at,
             article_main_image_url=article.main_image_url,
@@ -75,6 +77,7 @@ class ArticleDetailResponse(BaseModel):
     id: int
     title: str
     content: str
+    description: str
     created_at: datetime
     updated_at: datetime
     views: int
@@ -88,6 +91,7 @@ class ArticleDetailResponse(BaseModel):
         return ArticleDetailResponse(
             id=article.id,
             title=article.title,
+            description=article.description,
             content=article.content,
             created_at=article.created_at,
             updated_at=article.updated_at,
