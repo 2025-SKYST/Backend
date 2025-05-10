@@ -6,6 +6,7 @@ from memory.app.user.models import User
 from memory.database.annotation import transactional
 from memory.database.connection import SESSION
 from memory.app.chapter.models import Chapter
+from sqlalchemy.orm import selectinload
 
 class ChapterStore:
     @transactional
@@ -18,7 +19,15 @@ class ChapterStore:
         )
         SESSION.add(new_chapter)
         await SESSION.flush()
-        return new_chapter
+
+        # 새로 만든 Chapter를 images까지 포함해서 다시 가져옴
+        stmt = (
+            select(Chapter)
+            .options(selectinload(Chapter.images))
+            .where(Chapter.id == new_chapter.id)
+        )
+        result = await SESSION.execute(stmt)
+        return result.scalar_one()
     
     @transactional
     async def get_chapters(
