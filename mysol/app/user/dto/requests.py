@@ -2,6 +2,7 @@ import re
 from pydantic import BaseModel, EmailStr
 from pydantic.functional_validators import AfterValidator
 from typing import Annotated, Optional
+from datetime import datetime
 
 from mysol.common.errors import InvalidFieldFormatError
 
@@ -31,12 +32,30 @@ def validate_password(value: str) -> str:
     return value
 
 class UserSignupRequest(BaseModel):
-    email: EmailStr
     username: Annotated[str, AfterValidator(validate_username)]
+    login_id: str
     password: Annotated[str, AfterValidator(validate_password)]
+    birth_year: int
+    birth_month: int
+    birth_date: int
+    birth_hour: int
+    birth_minute: int
+
+    def to_birth_datetime(self) -> datetime:
+        """입력된 년/월/일/시/분 정보를 datetime으로 변환합니다."""
+        try:
+            return datetime(
+                self.birth_year,
+                self.birth_month,
+                self.birth_date,
+                self.birth_hour,
+                self.birth_minute
+            )
+        except ValueError as e:
+            raise ValueError(f"유효하지 않은 생년월일 정보입니다: {e}")
 
 class UserSigninRequest(BaseModel):
-    email: EmailStr
+    login_id: str
     password: str
 
 class UserUpdateRequest(BaseModel):

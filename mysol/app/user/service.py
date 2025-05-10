@@ -9,41 +9,33 @@ from mysol.app.user.models import User
 from mysol.app.user.store import UserStore
 from mysol.app.user.hashing import Hasher
 from mysol.database.settings import PW_SETTINGS
-from mysol.app.blog.service import BlogService
-from mysol.app.user.errors import (
-    EmailAlreadyExistsError,
-    UserNameAlreadyExistsError,
-    InvalidPasswordError,
-    UserUnsignedError,
-    UserNotFoundError,
-    ExpiredSignatureError,
-    InvalidTokenError,
-    BlockedTokenError
-)
+
+from mysol.app.user.errors import UserNameAlreadyExistsError, LoginIdAlreadyExistsError, UserUnsignedError, UserNotFoundError, InvalidPasswordError, InvalidTokenError, ExpiredSignatureError, BlockedTokenError
 
 class TokenType(Enum):
     ACCESS = "access"
     REFRESH = "refresh"
 
 class UserService:
-    def __init__(self, user_store: Annotated[UserStore, Depends()], blog_service: Annotated[BlogService, Depends()]) -> None:
+    def __init__(self, user_store: Annotated[UserStore, Depends()]) -> None:
         self.user_store = user_store
-        self.blog_service = blog_service
 
-    async def add_user(self, email: str, password: str, username: str) -> User:
-        if await self.user_store.get_user_by_field("email", email):
-            raise EmailAlreadyExistsError("이미 사용 중인 이메일입니다.")
+    async def add_user(self, username: str, login_id: str, password: str, birth: datetime) -> User:
+        # 중복 검사
         if await self.user_store.get_user_by_field("username", username):
             raise UserNameAlreadyExistsError("이미 사용 중인 사용자 이름입니다.")
-        
-        blogname = f"{username}님의 블로그"
-        blogdescription = f"{username}님의 블로그입니다."    
+        if await self.user_store.get_user_by_field("login_id", login_id):
+            raise LoginIdAlreadyExistsError("이미 사용 중인 로그인 ID입니다.")
 
         hashed_password = Hasher.hash_password(password)
-        user = await self.user_store.add_user(email=email, password=hashed_password, username=username)    
-        
-        await self.blog_service.create_blog(user_id=user.id, blog_name=blogname, description=blogdescription)
-        
+
+        user = await self.user_store.add_user(
+            username=username,
+            login_id=login_id,
+            password=hashed_password,
+            birth=birth
+        )
+
         return user
 
     async def get_user_by_email(self, email: str) -> User:

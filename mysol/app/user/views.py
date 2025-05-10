@@ -62,12 +62,19 @@ async def signup(
     """
     새로운 사용자를 등록하는 API.
     """
+    birth = signup_request.to_birth_datetime()
+
     user = await user_service.add_user(
-        email=signup_request.email,
         username=signup_request.username,
-        password=signup_request.password
+        login_id=signup_request.login_id,
+        password=signup_request.password,
+        birth=birth,
     )
-    return UserSignupResponse(email=user.email, username=user.username)
+
+    return UserSignupResponse(
+        username=user.username
+    )
+
 
 @user_router.post("/signin", status_code=HTTP_200_OK)
 async def signin(
