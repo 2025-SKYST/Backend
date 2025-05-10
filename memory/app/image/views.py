@@ -13,6 +13,10 @@ from memory.app.user.views import get_current_user_from_header
 from memory.app.user.models import User
 from memory.app.image.dto.responses import URLResponse, ImageProfileResponse
 from memory.app.image.service import ImageService
+from memory.app.chapter.service import ChapterService
+from memory.database.connection import SESSION
+from memory.common.openai_service import generate_continuous_story
+from memory.app.image.models import Image
 
 AWS_SETTINGS = AWSSettings()
 
@@ -32,17 +36,55 @@ async def upload_image(
         file=file
     )
 
-@image_router.post("/create/{chapter_id}, status_code=201")
+@image_router.post("/create/{chapter_id}", status_code=201)
 async def create_image(
     user: Annotated[User, Depends(get_current_user_from_header)],
     chapter_id: int,
     image_service: Annotated[ImageService, Depends()],
+    chapter_service: Annotated[ChapterService, Depends()],
     file: UploadFile = File(...),
     query: Optional[str] = Form(None),
     keyword: Optional[str] = Form(None)
 ) -> ImageProfileResponse:
     
+    chapter = await chapter_service.get_chapter_by_id(chapter_id)
+    
     unique_filename = f"{uuid.uuid4()}-{file.filename}"
     s3_path = f"uploads/{unique_filename}"
 
+    file_url = await image_service.upload_image(
+        s3_path=s3_path,
+        file=file
+    )
+
+    contents = await file.read()
+    await file.seek(0)
+
+    await SESSION.refresh(chapter)
+    previous_stories = [
+        img.story
+        for img in chapter.images
+        if img.story is not None
+    ]
+
+    story_text = await generate_continuous_story(
+        previous_stories=previous_stories,
+        image_bytes=contents,
+        content_type=file.content_type,
+        keywords=keyword,
+        user_query=query,
+    )
+    
+    image = Image(
+        file_url = file_url,
+        chapter_id = chapter_id,
+        user_id = user.id,
+        is_main = False,
+        content = story_text,
+    )
+
+    SESSION.add(image)
+    await SESSION.commit()
+
+    return ImageProfileResponse.from_image(image)
 
