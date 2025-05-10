@@ -72,7 +72,7 @@ class UserService:
 
         access_payload = {
             "sub": login_id,
-            "exp": now + timedelta(minutes=5),
+            "exp": now + timedelta(minutes=300),
             "typ": TokenType.ACCESS.value,
             "iat": now
         }
