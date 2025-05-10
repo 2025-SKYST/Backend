@@ -15,7 +15,7 @@ class ImageLangChainProcessor:
     LangChain을 이용해 생성된 텍스트를 상세 분석하는 클래스.
     """
 
-    def __init__(self, google_api_key: str, gemini_model: str = "models/text-bison-001"):
+    def __init__(self, google_api_key: str, gemini_model: str = "models/gemini-1.5-pro"):
         # Google API 키 설정
         os.environ["GOOGLE_API_KEY"] = google_api_key
         # Google Palm LLM 초기화
