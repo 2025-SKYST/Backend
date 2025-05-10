@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 from datetime import datetime
-from sqlalchemy import String, DateTime, func, Integer
+from sqlalchemy import String, DateTime, func, Integer, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from mysol.database.common import Base, intpk
 
