@@ -11,6 +11,7 @@ from memory.database.settings import AWS_SETTINGS
 from memory.app.user.views import get_current_user_from_header
 from memory.app.user.models import User
 from memory.app.image.dto.responses import URLResponse
+from memory.app.image.service import ImageService
 
 AWS_SETTINGS = AWS_SETTINGS()
 
@@ -19,16 +20,13 @@ image_router = APIRouter()
 @image_router.post("/upload", status_code=201)
 async def create_image(
     user: Annotated[User, Depends(get_current_user_from_header)],
+    image_service: Annotated[ImageService, Depends()],
     file: UploadFile = File(...)
 ) -> URLResponse:
-    """
-    사진 파일을 받아서 S3 서버에 업로드, URL을 반환
-    """
-
     unique_filename = f"{uuid.uuid4()}-{file.filename}"
     s3_path = f"uploads/{unique_filename}"
 
     return await image_service.upload_image(
-        s3_path = s3_path,
-        file = file
+        s3_path=s3_path,
+        file=file
     )

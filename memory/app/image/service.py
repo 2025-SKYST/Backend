@@ -20,31 +20,7 @@ class ImageService:
     ) -> URLResponse :
         try:
             file_url = await self.image_store.upload_image_in_S3(s3_path, file)
-            return URLResponse.from_image(file_url)
         except ClientError as e:
-            raise S3ClientError
-        except Exception as e:
-            raise UnexpectedError
-        
-    async def delete_image(
-        self,
-        file_url : str
-    ) -> dict :
-        try:
-            return await self.image_store.delete_image_in_S3(file_url)
-        except ClientError as e:
-            raise S3ClientError
-        except Exception as e:
-            raise UnexpectedError
-        
-    async def generate_presigned_url(
-        self,
-        request: PresignedUrlRequest
-    ) : 
-        try: 
-            return await self.image_store.generate_presigned_url(request)
-        except BotoCoreError as e:
-            raise UnexpectedError
-        except ClientError as e: 
-            raise S3ClientError
-        
+            # e.response["Error"]["Code"] 등을 보고 세부 처리 가능
+            raise HTTPException(500, detail="이미지 업로드에 실패했습니다.")
+        return URLResponse.from_image_url(file_url)
