@@ -8,22 +8,25 @@ class ChapterProfileResponse(BaseModel):
     chapter_name: str
     prologue: Optional[str] = None
     epilogue: Optional[str] = None
-
+    main_image_url: Optional[str] = None  # 대표 이미지 URL
 
     @staticmethod
     def from_chapter(chapter: Chapter) -> "ChapterProfileResponse":
+        # images 관계에서 첫 번째 URL을 우선 사용
+        first_url = chapter.images[0].file_url if chapter.images else None
         return ChapterProfileResponse(
             id=chapter.id,
             chapter_name=chapter.chapter_name,
             prologue=chapter.prologue,
             epilogue=chapter.epilogue,
+            main_image_url=first_url,
         )
 
 class ChapterListResponse(BaseModel):
     chapters: List[ChapterProfileResponse]
 
     @staticmethod
-    def from_chapters(chapters: list[Chapter]) -> "ChapterListResponse":
+    def from_chapters(chapters: List[Chapter]) -> "ChapterListResponse":
         return ChapterListResponse(
             chapters=[ChapterProfileResponse.from_chapter(ch) for ch in chapters]
         )
@@ -33,14 +36,21 @@ class ChapterDetailResponse(BaseModel):
     chapter_name: str
     prologue: Optional[str] = None
     epilogue: Optional[str] = None
+    main_image_url: Optional[str] = None   
     images: List[ImageProfileResponse] = []
 
     @staticmethod
     def from_chapter(chapter: Chapter) -> "ChapterDetailResponse":
+        # 1) Image DTO 리스트 생성
+        imgs = [ImageProfileResponse.from_image(img) for img in chapter.images]
+        # 2) 첫 번째 이미지 URL을 main_image_url 에 할당
+        first_url = imgs[0].file_url if imgs else None
+
         return ChapterDetailResponse(
             id=chapter.id,
             chapter_name=chapter.chapter_name,
             prologue=chapter.prologue,
             epilogue=chapter.epilogue,
-            images=[ImageProfileResponse.from_image(img) for img in chapter.images],
+            main_image_url=first_url,
+            images=imgs,
         )
