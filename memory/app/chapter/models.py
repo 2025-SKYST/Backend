@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from datetime import datetime
 from sqlalchemy import String, DateTime, func, Integer, Text, ForeignKey, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -6,6 +6,7 @@ from memory.database.common import Base, intpk
 
 if TYPE_CHECKING:
     from memory.app.user.models import User
+    from memory.app.image.models import Image
 
 class Chapter(Base):
     __tablename__ = "chapter"
@@ -29,4 +30,11 @@ class Chapter(Base):
     user: Mapped["User"] = relationship(
         "User",
         back_populates="chapters",
+    )
+
+    images: Mapped[List["Image"]] = relationship(
+        "Image",
+        back_populates="chapter",
+        cascade="all, delete-orphan",
+        lazy="selectin",
     )

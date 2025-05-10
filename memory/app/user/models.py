@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from datetime import datetime
 from sqlalchemy import String, DateTime, func, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -6,6 +6,7 @@ from memory.database.common import Base, intpk
 
 if TYPE_CHECKING:
     from memory.app.chapter.models import Chapter
+    from memory.app.image.models import Image
 
 class User(Base):
     __tablename__ = "user"
@@ -23,6 +24,13 @@ class User(Base):
         "Chapter",
         back_populates="user",
         cascade="all, delete-orphan",
+    )
+
+    main_image: Mapped[Optional["Image"]] = relationship(
+        "Image",
+        back_populates="user",
+        uselist=False,          # one-to-one 관계
+        foreign_keys="Image.user_id",
     )
 
 class BlockedToken(Base):
