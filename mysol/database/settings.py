@@ -1,6 +1,5 @@
 from mysol.settings import SETTINGS
-from pydantic import BaseSettings
-from pydantic_settings import SettingsConfigDict
+from pydantic_settings import SettingsConfigDict, BaseSettings
 
 class DatabaseSettings(BaseSettings):
     dialect: str = ""
