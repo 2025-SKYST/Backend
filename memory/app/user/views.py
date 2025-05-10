@@ -3,11 +3,11 @@ from typing import Annotated, Optional
 from starlette.status import HTTP_200_OK, HTTP_201_CREATED
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from mysol.app.user.dto.requests import UserSignupRequest, UserSigninRequest, TokenRefreshRequest, UserUpdateRequest
-from mysol.app.user.dto.reponses import UserSignupResponse, UserSigninResponse, MyProfileResponse, RefreshResponse
-from mysol.app.user.service import UserService
-from mysol.app.user.models import User
-from mysol.app.user.errors import InvalidTokenError, MissingAccessTokenError
+from memory.app.user.dto.requests import UserSignupRequest, UserSigninRequest, TokenRefreshRequest, UserUpdateRequest
+from memory.app.user.dto.reponses import UserSignupResponse, UserSigninResponse, MyProfileResponse, RefreshResponse
+from memory.app.user.service import UserService
+from memory.app.user.models import User
+from memory.app.user.errors import InvalidTokenError, MissingAccessTokenError
 from datetime import datetime, timezone
 
 user_router = APIRouter()

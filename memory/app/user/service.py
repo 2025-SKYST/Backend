@@ -5,12 +5,12 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 from enum import Enum
 
-from mysol.app.user.models import User
-from mysol.app.user.store import UserStore
-from mysol.app.user.hashing import Hasher
+from memory.app.user.models import User
+from memory.app.user.store import UserStore
+from memory.app.user.hashing import Hasher
 from mysol.database.settings import PW_SETTINGS
 
-from mysol.app.user.errors import UserNameAlreadyExistsError, LoginIdAlreadyExistsError, UserUnsignedError, UserNotFoundError, InvalidPasswordError, InvalidTokenError, ExpiredSignatureError, BlockedTokenError
+from memory.app.user.errors import UserNameAlreadyExistsError, LoginIdAlreadyExistsError, UserUnsignedError, UserNotFoundError, InvalidPasswordError, InvalidTokenError, ExpiredSignatureError, BlockedTokenError
 
 class TokenType(Enum):
     ACCESS = "access"

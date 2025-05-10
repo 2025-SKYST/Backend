@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 
-from mysol.app.user.models import User
+from memory.app.user.models import User
 
 class UserSignupResponse(BaseModel):
     username: str

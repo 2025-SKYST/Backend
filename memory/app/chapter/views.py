@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from mysol.database.settings import get_db
-from mysol.app.chapter.models import Chapter
+from memory.app.chapter.models import Chapter
 
 image_router = APIRouter()
 

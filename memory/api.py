@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from mysol.app.user.views import user_router
+from memory.app.user.views import user_router
 
 api_router = APIRouter()
 
