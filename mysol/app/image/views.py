@@ -15,6 +15,8 @@ from datetime import datetime, timezone
 
 import uuid
 import aioboto3
+import os
+from dotenv import load_dotenv
 
 from fastapi import APIRouter, File, UploadFile, HTTPException, Depends
 from sqlalchemy.orm import Session
@@ -82,7 +84,21 @@ async def create_image(
         chapter.image_id.append(image.id)
 
         # 이미지 → 텍스트 변환
-        converted_text = await convert_image_to_text(file)
+        
+        # 환경 변수 로드
+        load_dotenv()
+        google_api_key = os.getenv("GOOGLE_API_KEY")
+        if not google_api_key:
+            raise HTTPException(status_code=500, detail="Google API 키가 설정되지 않았습니다")
+        
+        processor = ImageLangChainProcessor(google_api_key=google_api_key)
+        await processor.load_images([file])
+        processor.generate_captions()
+        processor.detailed_descriptions()
+        
+        # 첫 번째 이미지의 상세 설명 반환
+        results = processor.get_results()
+        converted_text = results["analysis"]["detailed"][0]
 
         # Description row 생성
         description = Description(image_id=image.id, story=converted_text)
