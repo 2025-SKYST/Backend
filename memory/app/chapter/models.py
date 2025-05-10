@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 from datetime import datetime
-from sqlalchemy import String, DateTime, func, Integer, Text, ForeignKey
+from sqlalchemy import String, DateTime, func, Integer, Text, ForeignKey, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from mysol.database.common import Base, intpk
 
@@ -20,7 +20,7 @@ class Chapter(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     user_id: Mapped[int] = mapped_column(
-        Integer,
+        BigInteger, 
         ForeignKey("user.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
