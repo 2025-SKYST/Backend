@@ -31,3 +31,17 @@ class ChapterStore:
         stmt = select(Chapter).where(Chapter.user_id == user_id)
         result = await SESSION.execute(stmt)
         return result.scalars().all()
+    
+    @transactional
+    async def get_chapter_by_id(
+        self,
+        chapter_id: int,
+    ) -> Optional[Chapter]:
+        """
+        주어진 chapter_id로 Chapter를 조회하여 반환합니다.
+        없으면 None을 반환합니다.
+        """
+        stmt = select(Chapter).where(Chapter.id == chapter_id)
+        result = await SESSION.execute(stmt)
+        # id는 유니크하므로 scalar_one_or_none를 사용해 한 건 혹은 None
+        return result.scalar_one_or_none()
