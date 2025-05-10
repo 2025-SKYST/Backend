@@ -13,14 +13,11 @@ class Image(Base):
 
     id: Mapped[intpk]
     file_url: Mapped[str] = mapped_column(String(200), nullable=False)
-    chapter_id: Mapped[int | None] = mapped_column(ForeignKey("Chapter.id", ondelete="CASCADE"), nullable=True)
-    user_id: Mapped[int | None] = mapped_column(ForeignKey("User.id", ondelete="CASCADE"), nullable=True)
+    chapter_id: Mapped[int | None] = mapped_column(ForeignKey("chapter.id", ondelete="CASCADE"), nullable=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"), nullable=True)
     is_main: Mapped[bool] = mapped_column(default=False)
 
     content : Mapped[str | None] = mapped_column(Text, nullable = True)
-
-    article: Mapped["Chapter"] = relationship("Chapter", back_populates="images")
-    user: Mapped["User"] = relationship("User", back_populates="main_image")
 
     chapter: Mapped["Chapter"] = relationship(
         "Chapter",
