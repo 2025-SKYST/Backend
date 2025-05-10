@@ -24,8 +24,8 @@ async def get_current_user_from_header(
         raise MissingAccessTokenError()
 
     access_token = credentials.credentials  # Bearer 토큰 추출
-    email = user_service.validate_access_token(access_token)  # 토큰 검증 및 사용자 이메일 확인
-    user = await user_service.get_user_by_email(email)
+    login_id = user_service.validate_access_token(access_token)
+    user = await user_service.get_user_by_login_id(login_id)
 
     if not user:
         raise InvalidTokenError()
@@ -45,8 +45,8 @@ async def get_current_user_from_header_optional(
 
     access_token = credentials.credentials  # Bearer 토큰 추출
     try:
-        email = user_service.validate_access_token(access_token)  # 토큰 검증 및 이메일 확인
-        user = await user_service.get_user_by_email(email)
+        login_id = user_service.validate_access_token(access_token) 
+        user = await user_service.get_user_by_login_id(login_id)
         if not user:
             return None
         return user
