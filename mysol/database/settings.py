@@ -1,4 +1,3 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from mysol.settings import SETTINGS
 
 class DatabaseSettings(BaseSettings):
