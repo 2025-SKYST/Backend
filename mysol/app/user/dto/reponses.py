@@ -9,17 +9,22 @@ class UserSigninResponse(BaseModel):
     access_token : str
     refresh_token : str
 
+from pydantic import BaseModel
+from datetime import datetime
+
 class MyProfileResponse(BaseModel):
     user_id: int
     username: str
-    email: str
+    login_id: str
+    birth: datetime | None  # nullable 허용
 
     @staticmethod
     def from_user(user: User) -> "MyProfileResponse":
         return MyProfileResponse(
             user_id=user.id,
             username=user.username,
-            email=user.email,
+            login_id=user.login_id,
+            birth=user.birth,
         )
     
 class RefreshResponse(BaseModel):

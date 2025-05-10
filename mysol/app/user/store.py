@@ -24,26 +24,26 @@ class UserStore:
     async def get_user_by_field(self, field: str, value) -> Optional[User]:
         return await SESSION.scalar(select(User).where(getattr(User, field) == value))
 
-    @transactional
-    async def update_user(
-        self, user_id: int, username: Optional[str], email: Optional[str], new_password: Optional[str]
-    ) -> User:
-        user= await self.get_user_by_id(user_id)
+    # @transactional
+    # async def update_user(
+    #     self, user_id: int, username: Optional[str], email: Optional[str], new_password: Optional[str]
+    # ) -> User:
+    #     user= await self.get_user_by_id(user_id)
 
-        if username:
-            if await self.get_user_by_username(username=username):
-                raise UserNameAlreadyExistsError()
-            user.username = username
-        if email:
-            user.email = email
-        if new_password:
-            user.password = new_password
-        SESSION.merge(user)
-        await SESSION.flush()
-        await SESSION.refresh(user)
+    #     if username:
+    #         if await self.get_user_by_username(username=username):
+    #             raise UserNameAlreadyExistsError()
+    #         user.username = username
+    #     if email:
+    #         user.email = email
+    #     if new_password:
+    #         user.password = new_password
+    #     SESSION.merge(user)
+    #     await SESSION.flush()
+    #     await SESSION.refresh(user)
 
 
-        return user
+    #     return user
 
     @transactional
     async def block_token(self, token_id: str, expired_at: datetime) -> None:
