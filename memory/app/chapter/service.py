@@ -1,5 +1,5 @@
 import jwt
-from typing import Annotated, Optional
+from typing import Annotated, List
 from fastapi import Depends
 from datetime import datetime, timedelta
 from uuid import uuid4
@@ -24,3 +24,10 @@ class ChapterService:
         )
 
         return chapter
+    
+    async def get_chapters(self, user_id: int) -> List[Chapter]:
+        """
+        주어진 user_id가 가진 모든 Chapter를 조회하여 반환합니다.
+        """
+        chapters = await self.chapter_store.get_chapters(user_id=user_id)
+        return chapters

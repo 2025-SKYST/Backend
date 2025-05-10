@@ -19,3 +19,8 @@ class ChapterStore:
         SESSION.add(new_chapter)
         await SESSION.flush()
         return new_chapter
+    
+    async def get_chapters(self, *, user_id: int) -> list[Chapter]:
+        stmt = select(Chapter).where(Chapter.user_id == user_id)
+        result = await self.db.execute(stmt)
+        return result.scalars().all()
