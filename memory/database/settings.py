@@ -31,6 +31,12 @@ class AWSSettings(BaseSettings):
         env_file=".env.aws",
     )
 
+class GPTSettings(BaseSettings):
+    OPENAI_API_KEY: str
+    class Config:
+        env_file=".env.gpt"
+        env_file_encoding = "utf-8"
+
 class PasswordSettings(BaseSettings):
     secret_for_jwt: str  # JWT 비밀키
     kakao_rest_api_key: str  # 카카오 REST API 키

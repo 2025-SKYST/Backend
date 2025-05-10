@@ -23,4 +23,4 @@ class ImageService:
         except ClientError as e:
             # e.response["Error"]["Code"] 등을 보고 세부 처리 가능
             raise HTTPException(500, detail="이미지 업로드에 실패했습니다.")
-        return URLResponse.from_image_url(file_url)
+        return URLResponse.from_image(file_url)
