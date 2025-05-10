@@ -10,11 +10,12 @@ from mysol.app.user.errors import UserNameAlreadyExistsError
 
 class UserStore:
     @transactional
-    async def add_user(self, email: str, password: str, username: str) -> User:
+    async def add_user(self, username: str, user_id: str, password: str, birth: datetime) -> User:
         user = User(
-            email=email,
             username=username,
+            user_id=user_id,
             password=password,
+            birth=birth
         )
         SESSION.add(user)
         await SESSION.flush()
