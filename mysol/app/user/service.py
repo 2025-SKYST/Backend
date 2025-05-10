@@ -38,11 +38,11 @@ class UserService:
 
         return user
 
-    async def get_user_by_login_id(self, login_id: str) -> User | None:
-        return await self.user_store.get_user_by_field("user_id", login_id)
+    async def get_user_by_login_id(self, login_id: str) -> User:
+        return await self.user_store.get_user_by_field("login_id", login_id)
 
     async def signin(self, login_id: str, password: str) -> tuple[str, str]:
-        user = await self.get_user_by_login_id(login_id)
+        user = await self.get_user_by_login_id(login_id=login_id)
 
         if not user:
             raise UserNotFoundError()
@@ -50,7 +50,7 @@ class UserService:
         if not Hasher.verify_password(password, user.password):
             raise InvalidPasswordError()
         
-        return self.issue_tokens(user.user_id)
+        return self.issue_tokens(user.id)
     
     async def update_user(
         self,
