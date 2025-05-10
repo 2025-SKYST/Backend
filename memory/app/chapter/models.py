@@ -30,5 +30,3 @@ class Chapter(Base):
         "User",
         back_populates="chapters",
     )
-
-
