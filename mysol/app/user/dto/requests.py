@@ -63,9 +63,5 @@ class UserUpdateRequest(BaseModel):
     username: Optional[str] = None
     new_password: Optional[str] = None
 
-class UserSigninRequest(BaseModel):
-    email: EmailStr
-    password: str
-
 class TokenRefreshRequest(BaseModel):
     refresh_token: str

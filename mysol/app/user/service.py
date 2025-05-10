@@ -38,44 +38,40 @@ class UserService:
 
         return user
 
-    async def get_user_by_email(self, email: str) -> User:
-        user = await self.user_store.get_user_by_email(email)
-        if not user:
-            raise UserUnsignedError("존재하지 않는 사용자입니다.")
-        return user
+    async def get_user_by_login_id(self, login_id: str) -> User:
+        return await self.user_store.get_user_by_field("login_id", login_id)
 
-    async def signin(self, email: str, password: str) -> tuple[str, str]:
-        user = await self.get_user_by_email(email)
+    async def signin(self, login_id: str, password: str) -> tuple[str, str]:
+        user = await self.get_user_by_login_id(login_id=login_id)
 
         if not user:
             raise UserNotFoundError()
-    
+        
         if not Hasher.verify_password(password, user.password):
             raise InvalidPasswordError()
         
-        return self.issue_tokens(user.email)
+        return self.issue_tokens(user.login_id)
     
-    async def update_user(
-        self,
-        user_id : int,
-        new_user_name: str|None,
-        new_email: str|None,
-        new_password: str|None,
-    ) -> User:
-        user = await self.user_store.update_user(user_id=user_id, username=new_user_name, email=new_email, new_password=new_password)
-        return user
+    # async def update_user(
+    #     self,
+    #     user_id : int,
+    #     new_user_name: str|None,
+    #     new_email: str|None,
+    #     new_password: str|None,
+    # ) -> User:
+    #     user = await self.user_store.update_user(user_id=user_id, username=new_user_name, email=new_email, new_password=new_password)
+    #     return user
 
-    def issue_tokens(self, email: str) -> tuple[str, str]:
+    def issue_tokens(self, login_id: str) -> tuple[str, str]:
         """
-        보안 강화 설정 적용:
-        - access_token 만료: 5분
-        - refresh_token 만료: 1일
-        - refresh_token이 24시간 동안 사용되지 않으면 만료
+        JWT 토큰 발급:
+        - access_token: 5분 만료
+        - refresh_token: 3시간 만료
         """
         now = datetime.utcnow()
 
         access_payload = {
-            "sub": email,
+            "sub": login_id,
             "exp": now + timedelta(minutes=5),
             "typ": TokenType.ACCESS.value,
             "iat": now
@@ -83,11 +79,11 @@ class UserService:
         access_token = jwt.encode(access_payload, PW_SETTINGS.secret_for_jwt, algorithm="HS256")
 
         refresh_payload = {
-            "sub": email,
+            "sub": login_id,
             "jti": uuid4().hex,
             "exp": now + timedelta(hours=3),
             "iat": now,
-            "typ": TokenType.REFRESH.value,
+            "typ": TokenType.REFRESH.value
         }
         refresh_token = jwt.encode(refresh_payload, PW_SETTINGS.secret_for_jwt, algorithm="HS256")
 
@@ -95,7 +91,7 @@ class UserService:
 
     def validate_access_token(self, token: str) -> str:
         """
-        access_token을 검증하고, 사용자 이메일을 반환합니다.
+        access_token을 검증하고, 사용자 login_id를 반환합니다.
         """
         try:
             payload = jwt.decode(
@@ -106,7 +102,9 @@ class UserService:
             )
             if payload["typ"] != TokenType.ACCESS.value:
                 raise InvalidTokenError()
-            return payload["sub"]
+
+            return payload["sub"]  # now returns login_id
+
         except jwt.ExpiredSignatureError:
             raise ExpiredSignatureError()
         except jwt.InvalidTokenError:
@@ -114,7 +112,7 @@ class UserService:
 
     async def validate_refresh_token(self, token: str) -> str:
         """
-        refresh_token을 검증하고, 사용자 이메일을 반환합니다.
+        refresh_token을 검증하고, 사용자 login_id를 반환합니다.
         """
         try:
             payload = jwt.decode(
@@ -134,14 +132,14 @@ class UserService:
         if await self.user_store.is_token_blocked(payload["jti"]):
             raise BlockedTokenError()
 
-        return payload["sub"]
-
+        return payload["sub"]  # login_id
+    
     async def reissue_tokens(self, refresh_token: str) -> tuple[str, str]:
         """
         refresh_token을 검증하고, 새로운 access_token과 refresh_token을 발급합니다.
         """
-        username = await self.validate_refresh_token(refresh_token)
+        login_id = await self.validate_refresh_token(refresh_token)
 
         await self.user_store.block_token(refresh_token, datetime.utcnow())
 
-        return self.issue_tokens(username)
+        return self.issue_tokens(login_id)

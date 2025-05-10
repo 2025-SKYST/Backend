@@ -24,8 +24,8 @@ async def get_current_user_from_header(
         raise MissingAccessTokenError()
 
     access_token = credentials.credentials  # Bearer 토큰 추출
-    email = user_service.validate_access_token(access_token)  # 토큰 검증 및 사용자 이메일 확인
-    user = await user_service.get_user_by_email(email)
+    login_id = user_service.validate_access_token(access_token)
+    user = await user_service.get_user_by_login_id(login_id)
 
     if not user:
         raise InvalidTokenError()
@@ -45,8 +45,8 @@ async def get_current_user_from_header_optional(
 
     access_token = credentials.credentials  # Bearer 토큰 추출
     try:
-        email = user_service.validate_access_token(access_token)  # 토큰 검증 및 이메일 확인
-        user = await user_service.get_user_by_email(email)
+        login_id = user_service.validate_access_token(access_token) 
+        user = await user_service.get_user_by_login_id(login_id)
         if not user:
             return None
         return user
@@ -86,10 +86,10 @@ async def signin(
     JWT는 Authorization 헤더를 통해 전달.
     """
     access_token, refresh_token = await user_service.signin(
-        signin_request.email, signin_request.password
+        signin_request.login_id, signin_request.password
     )
 
-    user= await user_service.get_user_by_email(signin_request.email)
+    user = await user_service.get_user_by_login_id(signin_request.login_id)
 
     return UserSigninResponse(
         access_token=access_token,
@@ -139,10 +139,10 @@ async def me(user: Annotated[User, Depends(get_current_user_from_header)]) -> My
     """
     return MyProfileResponse.from_user(user)
 
-@user_router.patch("/me", status_code=HTTP_200_OK)
-async def updateme(
-    user: Annotated[User, Depends(get_current_user_from_header)], 
-    user_update_request: UserUpdateRequest,
-    user_service: Annotated[UserService, Depends()],
-) -> MyProfileResponse:
-    return MyProfileResponse.from_user(await user_service.update_user(user_id=user.id, new_email=user_update_request.email, new_user_name=user_update_request.username, new_password=user_update_request.new_password))
+# @user_router.patch("/me", status_code=HTTP_200_OK)
+# async def updateme(
+#     user: Annotated[User, Depends(get_current_user_from_header)], 
+#     user_update_request: UserUpdateRequest,
+#     user_service: Annotated[UserService, Depends()],
+# ) -> MyProfileResponse:
+#     return MyProfileResponse.from_user(await user_service.update_user(user_id=user.id, new_email=user_update_request.email, new_user_name=user_update_request.username, new_password=user_update_request.new_password))
