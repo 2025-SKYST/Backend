@@ -10,10 +10,10 @@ class User(Base):
 
     id: Mapped[intpk]
     username: Mapped[str | None] = mapped_column(String(20), unique=True, index=True)
-    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    login_id: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     password: Mapped[str] = mapped_column(String(100), nullable=False)
     birth: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)  # birth(datetime)
-    
+
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

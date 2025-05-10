@@ -31,12 +31,12 @@ def validate_password(value: str) -> str:
     return value
 
 class UserSignupRequest(BaseModel):
-    email: EmailStr
     username: Annotated[str, AfterValidator(validate_username)]
+    login_id: str
     password: Annotated[str, AfterValidator(validate_password)]
 
 class UserSigninRequest(BaseModel):
-    email: EmailStr
+    login_id: str
     password: str
 
 class UserUpdateRequest(BaseModel):
