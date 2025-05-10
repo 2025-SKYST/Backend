@@ -49,3 +49,4 @@ class PasswordSettings(BaseSettings):
 PW_SETTINGS = PasswordSettings()
 DB_SETTINGS = DatabaseSettings()
 AWS_SETTINGS = AWSSettings()
+GPT_SETTINGS = GPTSettings()
