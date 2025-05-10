@@ -12,29 +12,10 @@ USERNAME_ERROR_MSG = "아이디는 3~20자의 영문 대소문자, 숫자, `_`, 
 PASSWORD_LENGTH_ERROR_MSG = "비밀번호는 8자 이상 20자 이하로 설정해야 합니다."
 PASSWORD_COMPLEXITY_ERROR_MSG = "비밀번호는 영어 대문자, 영어 소문자, 숫자, 특수문자 중 최소 2가지 이상을 포함해야 합니다."
 
-def validate_username(value: str) -> str:
-    if not re.fullmatch(USERNAME_PATTERN, value):
-        raise InvalidFieldFormatError(USERNAME_ERROR_MSG)
-    return value
-
-def validate_password(value: str) -> str:
-    if len(value) < 8 or len(value) > 20:
-        raise InvalidFieldFormatError(PASSWORD_LENGTH_ERROR_MSG)
-
-    contains_uppercase = any(c.isupper() for c in value)
-    contains_lowercase = any(c.islower() for c in value)
-    contains_digit = any(c.isdigit() for c in value)
-    contains_special = any(not c.isalnum() for c in value)
-
-    if (contains_uppercase + contains_lowercase + contains_digit + contains_special) < 2:
-        raise InvalidFieldFormatError(PASSWORD_COMPLEXITY_ERROR_MSG)
-
-    return value
-
 class UserSignupRequest(BaseModel):
-    username: Annotated[str, AfterValidator(validate_username)]
+    username: str
     login_id: str
-    password: Annotated[str, AfterValidator(validate_password)]
+    password: str
     birth_year: int
     birth_month: int
     birth_date: int
