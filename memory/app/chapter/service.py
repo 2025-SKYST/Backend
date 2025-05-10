@@ -5,16 +5,14 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 from enum import Enum
 
-from memory.app.user.models import User
+from memory.app.chapter.models import Chapter
 from memory.app.chapter.store import ChapterStore
-from memory.app.user.hashing import Hasher
-from mysol.database.settings import PW_SETTINGS
 
 class TokenType(Enum):
     ACCESS = "access"
     REFRESH = "refresh"
 
-class UserService:
+class ChapterService:
     def __init__(self, chapter_store: Annotated[ChapterStore, Depends()]) -> None:
         self.chapter_store = chapter_store
 
@@ -24,3 +22,5 @@ class UserService:
             user_id=user_id,
             chapter_name=chapter_name
         )
+
+        return chapter
