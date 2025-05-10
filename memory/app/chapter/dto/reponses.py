@@ -41,12 +41,11 @@ class ChapterDetailResponse(BaseModel):
 
     @staticmethod
     def from_chapter(chapter: Chapter) -> "ChapterDetailResponse":
-
         return ChapterDetailResponse(
             id=chapter.id,
             chapter_name=chapter.chapter_name,
             prologue=chapter.prologue,
             epilogue=chapter.epilogue,
             main_image_url=chapter.main_image_url,
-            images=chapter.images,
+            images=[ImageProfileResponse.from_image(img) for img in chapter.images],
         )
