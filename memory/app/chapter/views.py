@@ -45,8 +45,7 @@ async def get_chapter_by_id(
     """
     단일 chapter의 상세 정보 (메타데이터+이미지 리스트)를 반환합니다.
     """
-    chapter = await chapter_service.get_chapter(
-        user_id=user.id,
+    chapter = await chapter_service.get_chapter_by_id(
         chapter_id=chapter_id,
     )
     return ChapterDetailResponse.from_chapter(chapter)
