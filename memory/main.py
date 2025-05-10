@@ -5,6 +5,9 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from memory.api import api_router
 from memory.database.middleware import DefaultSessionMiddleware
+from memory.database.settings import GPTSettings
+
+GPT_SETTINGS = GPTSettings()
 
 SECRET_KEY = os.urandom(32).hex()
 

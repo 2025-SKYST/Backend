@@ -17,6 +17,7 @@ from memory.app.chapter.service import ChapterService
 from memory.database.connection import SESSION
 from memory.common.openai_service import generate_continuous_story
 from memory.app.image.models import Image
+from memory.app.chapter.models import Chapter
 
 AWS_SETTINGS = AWSSettings()
 
@@ -47,18 +48,16 @@ async def create_image(
     keyword: Optional[str] = Form(None)
 ) -> ImageProfileResponse:
     
-    chapter = await chapter_service.get_chapter_by_id(chapter_id)
+    chapter = await SESSION.get(Chapter, chapter_id)
     
     unique_filename = f"{uuid.uuid4()}-{file.filename}"
     s3_path = f"uploads/{unique_filename}"
 
-    file_url = await image_service.upload_image(
+    url_resp = await image_service.upload_image(
         s3_path=s3_path,
         file=file
     )
-
-    contents = await file.read()
-    await file.seek(0)
+    file_url: str = url_resp.file_url
 
     await SESSION.refresh(chapter)
     previous_stories = [
@@ -69,7 +68,7 @@ async def create_image(
 
     story_text = await generate_continuous_story(
         previous_stories=previous_stories,
-        image_bytes=contents,
+        file_url = file_url,
         content_type=file.content_type,
         keywords=keyword,
         user_query=query,
