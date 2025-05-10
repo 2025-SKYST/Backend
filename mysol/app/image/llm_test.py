@@ -28,30 +28,10 @@ class ImageLangChainProcessor:
         self.processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-large")
         self.model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-large")
         self.images: List[Image.Image] = []
-        self.captions: List[str] = []
+        self.captions: List[str] = ["The morning sun cast a soft, amber glow over the rolling hills, painting the landscape with hues of gold and rose. The sky stretched endlessly, a canvas of delicate pastel colors that gradually deepened as the sun ascended. Wispy clouds drifted lazily across the horizon, their ethereal forms reflecting the soft morning light."]
         self.analysis: Dict[str, List[str]] = {}
 
-    async def load_images(self, images: List[UploadFile]) -> 'ImageLangChainProcessor':
-        """UploadFile 객체 목록을 로드합니다."""
-        for file in images:
-            # UploadFile의 내용을 메모리에 로드
-            content = await file.read()
-            # 메모리에서 PIL 이미지로 변환
-            img = Image.open(BytesIO(content))
-            self.images.append(img)
-        return self
-
-    def generate_captions(self) -> 'ImageLangChainProcessor':
-        """BLIP 모델을 활용해 각 이미지에 대한 캡션을 생성합니다."""
-        captions = []
-        for img in self.images:
-            img = img.convert("RGB")
-            inputs = self.processor(images=img, return_tensors="pt")
-            outputs = self.model.generate(**inputs)
-            caption = self.processor.decode(outputs[0], skip_special_tokens=True)
-            captions.append(caption)
-        self.captions = captions
-        return self
+    
 
     def analyze(self, name: str, prompt_template: str) -> 'ImageLangChainProcessor':
         """
