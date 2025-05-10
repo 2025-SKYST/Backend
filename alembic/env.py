@@ -6,8 +6,8 @@ from sqlalchemy import Connection, pool
 from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from mysol.database.common import Base
-from mysol.database.settings import DB_SETTINGS
+from memory.database.common import Base
+from memory.database.settings import DB_SETTINGS
 
 from memory.app.user.models import User
 from memory.app.chapter.models import Chapter

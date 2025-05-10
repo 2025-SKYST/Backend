@@ -3,8 +3,8 @@ from sqlalchemy import select
 from datetime import datetime
 
 from memory.app.user.models import User, BlockedToken
-from mysol.database.annotation import transactional
-from mysol.database.connection import SESSION
+from memory.database.annotation import transactional
+from memory.database.connection import SESSION
 from memory.app.user.hashing import Hasher
 from memory.app.user.errors import UserNameAlreadyExistsError
 

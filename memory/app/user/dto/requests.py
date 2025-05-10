@@ -4,7 +4,7 @@ from pydantic.functional_validators import AfterValidator
 from typing import Annotated, Optional
 from datetime import datetime
 
-from mysol.common.errors import InvalidFieldFormatError
+from memory.common.errors import InvalidFieldFormatError
 
 USERNAME_PATTERN = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 

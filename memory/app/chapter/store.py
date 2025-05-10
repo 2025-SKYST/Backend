@@ -3,8 +3,8 @@ from sqlalchemy import select
 from datetime import datetime
 
 from memory.app.user.models import User
-from mysol.database.annotation import transactional
-from mysol.database.connection import SESSION
+from memory.database.annotation import transactional
+from memory.database.connection import SESSION
 from memory.app.chapter.models import Chapter
 
 class ChapterStore:

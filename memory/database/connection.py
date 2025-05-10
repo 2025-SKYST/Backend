@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from mysol.database.settings import DB_SETTINGS
+from memory.database.settings import DB_SETTINGS
 
 
 class DatabaseManager:

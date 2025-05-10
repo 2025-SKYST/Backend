@@ -8,7 +8,7 @@ from enum import Enum
 from memory.app.user.models import User
 from memory.app.user.store import UserStore
 from memory.app.user.hashing import Hasher
-from mysol.database.settings import PW_SETTINGS
+from memory.database.settings import PW_SETTINGS
 
 from memory.app.user.errors import UserNameAlreadyExistsError, LoginIdAlreadyExistsError, UserUnsignedError, UserNotFoundError, InvalidPasswordError, InvalidTokenError, ExpiredSignatureError, BlockedTokenError
 

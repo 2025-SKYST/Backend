@@ -1,4 +1,4 @@
-from mysol.database.connection import SESSION, reset_session, start_new_session_if_not_exists
+from memory.database.connection import SESSION, reset_session, start_new_session_if_not_exists
 
 
 from functools import wraps

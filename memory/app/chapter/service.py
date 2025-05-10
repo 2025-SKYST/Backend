@@ -18,7 +18,7 @@ class ChapterService:
 
     async def add_chapter(self, user_id: int, chapter_name: str) -> Chapter:
 
-        chapter = await self.chapter_store.create(
+        chapter = await self.chapter_store.add_chapter(
             user_id=user_id,
             chapter_name=chapter_name
         )

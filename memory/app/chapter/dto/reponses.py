@@ -1,12 +1,13 @@
 from pydantic import BaseModel
-
+from typing import Optional
 from memory.app.chapter.models import Chapter
 
 class ChapterProfileResponse(BaseModel):
     id: int
     chapter_name: str
-    prologue: str
-    epilogue: str
+    prologue: Optional[str] = None
+    epilogue: Optional[str] = None
+
 
     @staticmethod
     def from_chapter(chapter: Chapter) -> "ChapterProfileResponse":

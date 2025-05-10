@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from datetime import datetime
 from sqlalchemy import String, DateTime, func, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from mysol.database.common import Base, intpk
+from memory.database.common import Base, intpk
 
 if TYPE_CHECKING:
     from memory.app.chapter.models import Chapter
