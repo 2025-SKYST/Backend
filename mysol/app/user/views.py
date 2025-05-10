@@ -72,8 +72,7 @@ async def signup(
     )
 
     return UserSignupResponse(
-        username=user.username,
-        email=user.email
+        username=user.username
     )
 
 

@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from mysol.database.common import Base
 from mysol.database.settings import DB_SETTINGS
 
-from mysol.app.image.models import Image
 from mysol.app.user.models import User
 
 # this is the Alembic Config object, which provides

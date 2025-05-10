@@ -24,14 +24,14 @@ class UserService:
         # 중복 검사
         if await self.user_store.get_user_by_field("username", username):
             raise UserNameAlreadyExistsError("이미 사용 중인 사용자 이름입니다.")
-        if await self.user_store.get_user_by_field("user_id", login_id):
+        if await self.user_store.get_user_by_field("login_id", login_id):
             raise LoginIdAlreadyExistsError("이미 사용 중인 로그인 ID입니다.")
 
         hashed_password = Hasher.hash_password(password)
 
         user = await self.user_store.add_user(
             username=username,
-            user_id=login_id,
+            login_id=login_id,
             password=hashed_password,
             birth=birth
         )

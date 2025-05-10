@@ -3,7 +3,6 @@ from pydantic import BaseModel, EmailStr
 from mysol.app.user.models import User
 
 class UserSignupResponse(BaseModel):
-    email: EmailStr
     username: str
 
 class UserSigninResponse(BaseModel):
