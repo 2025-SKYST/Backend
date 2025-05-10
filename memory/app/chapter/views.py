@@ -21,9 +21,8 @@ async def create_chapter(
     """
     chapter를 생성
     """
-    chapter = await chapter_service.add_chapter(user_id=user.id, chapter_name=request.name)
-    
-    return ChapterProfileResponse.from_chapter(chapter)
+    return await chapter_service.add_chapter(user_id=user.id, chapter_name=request.name)
+
 
 @chapter_router.get("/get", status_code=201)
 async def get_my_chapters(

@@ -41,16 +41,12 @@ class ChapterDetailResponse(BaseModel):
 
     @staticmethod
     def from_chapter(chapter: Chapter) -> "ChapterDetailResponse":
-        # 1) Image DTO 리스트 생성
-        imgs = [ImageProfileResponse.from_image(img) for img in chapter.images]
-        # 2) 첫 번째 이미지 URL을 main_image_url 에 할당
-        first_url = imgs[0].file_url if imgs else None
 
         return ChapterDetailResponse(
             id=chapter.id,
             chapter_name=chapter.chapter_name,
             prologue=chapter.prologue,
             epilogue=chapter.epilogue,
-            main_image_url=first_url,
-            images=imgs,
+            main_image_url=chapter.main_image_url,
+            images=chapter.images,
         )

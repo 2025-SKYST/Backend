@@ -7,6 +7,7 @@ from enum import Enum
 
 from memory.app.chapter.models import Chapter
 from memory.app.chapter.store import ChapterStore
+from memory.app.chapter.dto.reponses import ChapterProfileResponse
 
 class TokenType(Enum):
     ACCESS = "access"
@@ -16,14 +17,14 @@ class ChapterService:
     def __init__(self, chapter_store: Annotated[ChapterStore, Depends()]) -> None:
         self.chapter_store = chapter_store
 
-    async def add_chapter(self, user_id: int, chapter_name: str) -> Chapter:
+    async def add_chapter(self, user_id: int, chapter_name: str) -> ChapterProfileResponse:
 
         chapter = await self.chapter_store.add_chapter(
             user_id=user_id,
             chapter_name=chapter_name
         )
 
-        return chapter
+        return ChapterProfileResponse.from_chapter(chapter)
     
     async def get_chapters(self, user_id: int) -> List[Chapter]:
         """
