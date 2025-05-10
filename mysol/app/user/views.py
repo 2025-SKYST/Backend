@@ -86,10 +86,10 @@ async def signin(
     JWT는 Authorization 헤더를 통해 전달.
     """
     access_token, refresh_token = await user_service.signin(
-        signin_request.email, signin_request.password
+        signin_request.login_id, signin_request.password
     )
 
-    user= await user_service.get_user_by_email(signin_request.email)
+    user = await user_service.get_user_by_login_id(signin_request.login_id)
 
     return UserSigninResponse(
         access_token=access_token,

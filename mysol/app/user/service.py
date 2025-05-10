@@ -38,22 +38,19 @@ class UserService:
 
         return user
 
-    async def get_user_by_email(self, email: str) -> User:
-        user = await self.user_store.get_user_by_email(email)
-        if not user:
-            raise UserUnsignedError("존재하지 않는 사용자입니다.")
-        return user
+    async def get_user_by_login_id(self, login_id: str) -> User | None:
+        return await self.user_store.get_user_by_field("user_id", login_id)
 
-    async def signin(self, email: str, password: str) -> tuple[str, str]:
-        user = await self.get_user_by_email(email)
+    async def signin(self, login_id: str, password: str) -> tuple[str, str]:
+        user = await self.get_user_by_login_id(login_id)
 
         if not user:
             raise UserNotFoundError()
-    
+        
         if not Hasher.verify_password(password, user.password):
             raise InvalidPasswordError()
         
-        return self.issue_tokens(user.email)
+        return self.issue_tokens(user.user_id)
     
     async def update_user(
         self,

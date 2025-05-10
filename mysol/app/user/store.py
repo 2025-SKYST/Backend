@@ -21,15 +21,6 @@ class UserStore:
         await SESSION.flush()
         return user
 
-    async def get_user_by_id(self, id: int) -> Optional[User]:
-        return await self.get_user_by_field("id", id)
-
-    async def get_user_by_username(self, username: str) -> Optional[User]:
-        return await self.get_user_by_field("username", username)
-
-    async def get_user_by_email(self, email: str) -> Optional[User]:
-        return await self.get_user_by_field("email", email)
-
     async def get_user_by_field(self, field: str, value) -> Optional[User]:
         return await SESSION.scalar(select(User).where(getattr(User, field) == value))
 
