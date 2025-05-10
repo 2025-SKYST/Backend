@@ -10,6 +10,7 @@ from mysol.database.common import Base
 from mysol.database.settings import DB_SETTINGS
 
 from mysol.app.user.models import User
+from mysol.app.chapter.models import Chapter
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
