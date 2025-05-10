@@ -3,8 +3,8 @@ from fastapi import FastAPI, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from mysol.api import api_router
-from mysol.database.middleware import DefaultSessionMiddleware
+from memory.api import api_router
+from memory.database.middleware import DefaultSessionMiddleware
 
 SECRET_KEY = os.urandom(32).hex()
 

@@ -2,11 +2,11 @@ from typing import Optional
 from sqlalchemy import select
 from datetime import datetime
 
-from mysol.app.user.models import User, BlockedToken
-from mysol.database.annotation import transactional
-from mysol.database.connection import SESSION
-from mysol.app.user.hashing import Hasher
-from mysol.app.user.errors import UserNameAlreadyExistsError
+from memory.app.user.models import User, BlockedToken
+from memory.database.annotation import transactional
+from memory.database.connection import SESSION
+from memory.app.user.hashing import Hasher
+from memory.app.user.errors import UserNameAlreadyExistsError
 
 class UserStore:
     @transactional

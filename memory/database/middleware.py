@@ -1,6 +1,6 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from mysol.database.connection import SESSION, reset_session, start_default_session
+from memory.database.connection import SESSION, reset_session, start_default_session
 
 
 class DefaultSessionMiddleware(BaseHTTPMiddleware):
