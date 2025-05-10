@@ -1,6 +1,6 @@
 from mysol.common.errors import MysolHTTPException
 
-class EmailAlreadyExistsError(MysolHTTPException):
+class LoginIdAlreadyExistsError(MysolHTTPException):
     def __init__(self, message: str = "이미 존재하는 이메일입니다.") -> None:
         super().__init__(status_code=409, detail=message)
 
