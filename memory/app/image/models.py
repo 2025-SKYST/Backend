@@ -17,6 +17,8 @@ class Image(Base):
     user_id: Mapped[int | None] = mapped_column(ForeignKey("User.id", ondelete="CASCADE"), nullable=True)
     is_main: Mapped[bool] = mapped_column(default=False)
 
+    content : Mapped[str | None] = mapped_column(Text, nullable = True)
+
     article: Mapped["Chapter"] = relationship("Chapter", back_populates="images")
     user: Mapped["User"] = relationship("User", back_populates="main_image")
 
