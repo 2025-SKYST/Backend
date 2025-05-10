@@ -13,3 +13,5 @@ node_modules/
 *.txt
 
 *.pem
+
+settings.py
