@@ -12,7 +12,7 @@ class Image(Base):
     __tablename__ = "image"
 
     id: Mapped[intpk]
-    file_url: Mapped[str] = mapped_column(String(200), nullable=False)
+    file_url: Mapped[str] = mapped_column(String(600), nullable=False)
     chapter_id: Mapped[int | None] = mapped_column(ForeignKey("chapter.id", ondelete="CASCADE"), nullable=True)
     user_id: Mapped[int | None] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"), nullable=True)
     is_main: Mapped[bool] = mapped_column(default=False)

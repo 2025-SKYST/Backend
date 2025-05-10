@@ -86,4 +86,3 @@ async def create_image(
     await SESSION.commit()
 
     return ImageProfileResponse.from_image(image)
-
