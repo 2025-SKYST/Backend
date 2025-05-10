@@ -5,20 +5,28 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from mysol.database.common import Base, intpk
 
 
-class User(Base):
-    __tablename__ = "user"
+class Image(Base):
+    __tablename__ = "image"
 
-    id: Mapped[intpk]
-    username: Mapped[str | None] = mapped_column(String(20), unique=True, index=True)
-    login_id: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(100), nullable=False)
-    birth: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)  # birth(datetime)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    keyword: Mapped[str | None] = mapped_column(Text, nullable=True)
+    query: Mapped[str | None] = mapped_column(Text, nullable=True)
+    image_url: Mapped[str] = mapped_column(Text, nullable=False)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    chapter_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("chapter.id"), nullable=False
+    )
+    description_id: Mapped[int | None] = mapped_column(
+        Integer, ForeignKey("description.id"), nullable=True
+    )
 
-class BlockedToken(Base):
-    __tablename__ = "blocked_tokens"
 
-    token_id: Mapped[str] = mapped_column(String(255), primary_key=True)
-    expired_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+class Description(Base):
+    __tablename__ = "description"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    story: Mapped[str] = mapped_column(Text, nullable=False)
+    image_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("image.id"), nullable=False
+    )
