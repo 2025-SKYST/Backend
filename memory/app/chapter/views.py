@@ -5,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from mysol.database.settings import get_db
 from mysol.app.chapter.models import Chapter
-from mysol.app.image.models import Image
 
 image_router = APIRouter()
 

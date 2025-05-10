@@ -4,7 +4,6 @@ from sqlalchemy import String, DateTime, func, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from mysol.database.common import Base, intpk
 
-
 class User(Base):
     __tablename__ = "user"
 
