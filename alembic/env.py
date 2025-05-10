@@ -11,6 +11,7 @@ from memory.database.settings import DB_SETTINGS
 
 from memory.app.user.models import User
 from memory.app.chapter.models import Chapter
+from memory.app.image.models import Image
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
