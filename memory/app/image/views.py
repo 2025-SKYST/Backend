@@ -61,9 +61,9 @@ async def create_image(
 
     await SESSION.refresh(chapter)
     previous_stories = [
-        img.story
+        img.content
         for img in chapter.images
-        if img.story is not None
+        if img.content is not None
     ]
 
     story_text = await generate_continuous_story(
