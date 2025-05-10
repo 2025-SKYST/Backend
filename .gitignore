@@ -15,3 +15,5 @@ node_modules/
 *.pem
 
 settings.py
+
+.venv/
