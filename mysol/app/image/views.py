@@ -26,6 +26,7 @@ from mysol.database.session import get_db
 from mysol.app.user.models import User
 from mysol.app.user.views import get_current_user_from_header
 from mysol.app.image.models import Image, Description
+from mysol.app.image.img2text import ImageLangChainProcessor
 from mysol.app.chapter.models import Chapter
 
 AWS_SETTINGS = AWSSettings()
@@ -80,9 +81,8 @@ async def create_image(
             raise HTTPException(status_code=404, detail="해당 챕터 없음")
         chapter.image_id.append(image.id)
 
-        # pseudo code: 이미지 → 텍스트 변환
-        # converted_text = convert_image_to_text(presigned_url)
-        converted_text = pseudo_convert_image_to_text(presigned_url)
+        # 이미지 → 텍스트 변환
+        converted_text = await convert_image_to_text(file)
 
         # Description row 생성
         description = Description(image_id=image.id, story=converted_text)
