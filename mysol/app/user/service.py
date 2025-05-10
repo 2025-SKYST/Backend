@@ -10,7 +10,7 @@ from mysol.app.user.store import UserStore
 from mysol.app.user.hashing import Hasher
 from mysol.database.settings import PW_SETTINGS
 
-from mysol.app.user.errors import UserNameAlreadyExistsError, LoginIdAlreadyExistsError
+from mysol.app.user.errors import UserNameAlreadyExistsError, LoginIdAlreadyExistsError, UserUnsignedError, UserNotFoundError, InvalidPasswordError, InvalidTokenError, ExpiredSignatureError, BlockedTokenError
 
 class TokenType(Enum):
     ACCESS = "access"
