@@ -12,7 +12,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://www.editorialhub.site", "https://editorialhub.site"],
+    allow_origins=["http://localhost:3000", "https://www.memory123.store", "https://memory123.store"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
